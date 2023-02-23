@@ -31,8 +31,8 @@ class MainThread(threading.Thread):
         self.counter = 0
         self.queue = Queue()
 
-        self.observer = ThreadObserver(countrols=self.controls, 
-                                       queue=self.queue, 
+        self.observer = ThreadObserver(countrols=self.controls,
+                                       queue=self.queue,
                                        counter=count)
         self.observer.start()
 
