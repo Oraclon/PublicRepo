@@ -36,20 +36,24 @@ class MainThread(threading.Thread):
         self.status = self.controls.flag._flag
     def run(self):
         __t = trange(10000, leave=False)
-        for _ in __t:
-            if self.controls.running.is_set():
-                self.controls.flag.wait()
-                item = r(100, 10000)
-                __t.set_description(f"[{item}]")
-                if item >= 9990:
-                    time.sleep(1)
-                    break
-            elif item >= 5000:
-                self.controls.pause()
-                time.sleep(2)
-                self.controls.resume()
+        while self.controls.running.is_set():
+            for _ in __t:
+                if self.controls.running.is_set():
+                    self.controls.flag.wait()
+                    item = r(100, 10000)
+
+                    __t.set_description(f"[{item}]")
+                    if item >= 9900:
+                        self.controls.stop()
+                        time.sleep(1)
+
+                    elif item >= 9800:
+                        self.controls.pause()
+                        time.sleep(2)
+                        self.controls.resume()
             
-            time.sleep(0.01)
+                time.sleep(0.01)
+            break
                 
 s = MainThread()
 s.start()
