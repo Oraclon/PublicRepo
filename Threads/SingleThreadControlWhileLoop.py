@@ -5,7 +5,7 @@ import time
 
 ################################################################
 #   Question: How can we control a Single Thread from pythons  #
-#             Threading Module                                 #
+#             Threading Module on a WHILE loop                 #
 #                                                              #
 #   Answer: By default when you create a Thread with Pythons   #
 #           Threading Module it has 2 hidden values the FLAG   #
@@ -34,29 +34,3 @@ class ThreadControls:
     def stop(self):
         self.flag.set()
         self.running.clear()
-
-class MainThread(threading.Thread):
-    """
-        This is the main thread that will be
-        controlled by a ThreadControls class
-    """
-    def __init__(self, counter=None):
-        super().__init__()
-        self.counter = counter
-        self.controls = ThreadControls()
-        self.status = self.controls.flag._flag
-    def run(self):
-        __t = trange(10000, leave=False)
-        for _ in __t:
-            item = r(100, 10000)
-            __t.set_description(f"[{item}]")
-            if item >= 9800:
-                self.controls.pause()
-                time.sleep(2)
-                self.controls.resume()
-            
-            time.sleep(0.01)
-                
-s = MainThread()
-s.start()
-    
