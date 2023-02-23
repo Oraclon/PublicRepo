@@ -31,7 +31,9 @@ class MainThread(threading.Thread):
         self.counter = 0
         self.queue = Queue()
 
-        self.observer = ThreadObserver(countrols=self.controls, queue=self.queue, counter=count)
+        self.observer = ThreadObserver(countrols=self.controls, 
+                                       queue=self.queue, 
+                                       counter=count)
         self.observer.start()
 
     def run(self):
@@ -49,7 +51,9 @@ class MainThread(threading.Thread):
         self.controls.stop()
 
 class ThreadObserver(threading.Thread):
-    def __init__(self, countrols=None, queue = None, counter = None):
+    def __init__(self, countrols=None, 
+                       queue = None, 
+                       counter = None):
         super().__init__()
         self.controls = countrols
         self.queue = queue
