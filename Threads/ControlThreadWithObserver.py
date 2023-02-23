@@ -60,7 +60,6 @@ class ThreadObserver(threading.Thread):
         self.name = f"OBSER[{counter}]"
     
     def run(self):
-        v = self.controls.check_run()
         while self.controls.check_run():
             item = self.queue.get()
             if item is not None:
