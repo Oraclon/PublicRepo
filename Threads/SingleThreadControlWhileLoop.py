@@ -1,5 +1,4 @@
 from random import randint as r
-from tqdm import trange
 import threading
 import time
 import os
@@ -57,11 +56,11 @@ class MainThread(threading.Thread):
                 print(f"Terminated [{t} | {item}]")
 
             elif ((item >=9700) and (item <=9989)):
-               self.controls.pause()
-               print(f"Paused [{t} | {item}]")
-               time.sleep(2)
-               self.controls.resume()
-               print(f"Resumed [{t} | {item}]")
+                self.controls.pause()
+                print(f"Paused [{t} | {item}]")
+                time.sleep(2)
+                self.controls.resume()
+                print(f"Resumed [{t} | {item}]")
 
 s = MainThread()
 s.start()

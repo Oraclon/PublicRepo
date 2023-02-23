@@ -2,7 +2,6 @@ from random import randint as r
 from tqdm import trange
 import threading
 import time
-import os
 
 ################################################################
 #   Question: How can we control a Single Thread from pythons  #
@@ -59,8 +58,6 @@ class MainThread(threading.Thread):
                 time.sleep(2)
                 self.controls.resume()
             time.sleep(0.03)
-            
-
 s = MainThread()
 s.start()
     
