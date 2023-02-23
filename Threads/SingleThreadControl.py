@@ -3,6 +3,8 @@ from tqdm import trange
 import threading
 import time
 
+""""""
+
 CreatedThreads = dict()
 
 class ThreadControls:
@@ -11,11 +13,10 @@ class ThreadControls:
     """
     def __init__(self):
         self.running = threading.Event()
-        self.flag = threading.Event()
-
         self.running.set()
+        self.flag = threading.Event()
         self.flag.set()
-    
+        
     def pause(self):
         self.flag.clear()
     def resume(self):
@@ -27,7 +28,7 @@ class ThreadControls:
 class MainThread(threading.Thread):
     """
         This is the main thread that will be
-        controlled
+        controlled by a ThreadControls class
     """
     def __init__(self, counter=None):
         super().__init__()
@@ -36,24 +37,16 @@ class MainThread(threading.Thread):
         self.status = self.controls.flag._flag
     def run(self):
         __t = trange(10000, leave=False)
-        while self.controls.running.is_set():
-            for _ in __t:
-                if self.controls.running.is_set():
-                    self.controls.flag.wait()
-                    item = r(100, 10000)
-
-                    __t.set_description(f"[{item}]")
-                    if item >= 9900:
-                        self.controls.stop()
-                        time.sleep(1)
-
-                    elif item >= 9800:
-                        self.controls.pause()
-                        time.sleep(2)
-                        self.controls.resume()
+        for _ in __t:
+            item = r(100, 10000)
+            __t.set_description(f"[{item}]")
+            if item >= 9800:
+                self.controls.pause()
+                time.sleep(2)
+                self.controls.resume()
             
-                time.sleep(0.01)
-            break
+            time.sleep(0.01)
                 
 s = MainThread()
 s.start()
+    
