@@ -11,7 +11,7 @@ import os
 #           Threading Module it has 2 hidden values the FLAG    #
 #           and RUNNING so if you define a Threading Event in   #
 #           them like it happens in ThreadControls class        #
-#           you can use by using SET or CLEAR in order to       # 
+#           you can use by using SET or CLEAR in order to       #
 #           be able to control the thread on each itteration    #
 #################################################################
 
