@@ -20,7 +20,7 @@ class ThreadControls:
     def keep_up(self):
         self.__flag.wait()
     def check_run(self):
-        return self.__running
+        return self.__running.is_set()
 
 class MainThread(threading.Thread):
     def __init__(self, count = None):
@@ -60,7 +60,8 @@ class ThreadObserver(threading.Thread):
         self.name = f"OBSER[{counter}]"
     
     def run(self):
-        while self.controls.check_run().is_set():
+        v = self.controls.check_run()
+        while self.controls.check_run():
             item = self.queue.get()
             if item is not None:
                 self.controls.pause()
@@ -69,5 +70,5 @@ class ThreadObserver(threading.Thread):
             else:
                 break
 
-# threa = MainThread(count=1)
-# threa.start()
+threa = MainThread(count=1)
+threa.start()
