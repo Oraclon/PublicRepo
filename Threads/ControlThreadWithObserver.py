@@ -17,7 +17,7 @@ class ThreadControls:
     def stop(self):
         self.__flag.set()
         self.__running.clear()
-    def keep_up(self):
+    def check_flag(self):
         self.__flag.wait()
     def check_run(self):
         return self.__running.is_set()
@@ -39,7 +39,7 @@ class MainThread(threading.Thread):
     def run(self):
         __t = trange(2000, leave=False)
         for _ in __t:
-            self.controls.keep_up()
+            self.controls.check_flag()
             item = r(100, 10000)
             if item > 9900:
                 ti = round(time.time() * 1000, 3)
