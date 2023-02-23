@@ -22,18 +22,22 @@ class ThreadControls:
         This will control the attached Thread
     """
     def __init__(self):
-        self.running = threading.Event()
-        self.running.set()
-        self.flag = threading.Event()
-        self.flag.set()
+        self.__running = threading.Event()
+        self.__running.set()
+        self.__flag = threading.Event()
+        self.__flag.set()
         
     def pause(self):
-        self.flag.clear()
+        self.__flag.clear()
     def resume(self):
-        self.flag.set()
+        self.__flag.set()
     def stop(self):
-        self.flag.set()
-        self.running.clear()
+        self.__flag.set()
+        self.__running.clear()
+    def check_flag(self):
+        self.__flag.wait()
+    def check_run(self):
+        return self.__running.is_set()
 
 class MainThread(threading.Thread):
     """
@@ -44,12 +48,11 @@ class MainThread(threading.Thread):
         super().__init__()
         self.counter = counter
         self.controls = ThreadControls()
-        self.status = self.controls.flag._flag
     def run(self):
-        while self.controls.running.is_set():
+        while self.controls.check_run():
             os.system("clear")
             t = round(time.time() * 1000, 3)
-            self.controls.flag.wait()
+            self.controls.check_flag()
             item = r(100, 10000)
             if item > 9990:
                 self.controls.stop()
@@ -58,7 +61,7 @@ class MainThread(threading.Thread):
             elif ((item >=9700) and (item <=9989)):
                 self.controls.pause()
                 print(f"Paused [{t} | {item}]")
-                time.sleep(2)
+                time.sleep(1)
                 self.controls.resume()
                 print(f"Resumed [{t} | {item}]")
 
