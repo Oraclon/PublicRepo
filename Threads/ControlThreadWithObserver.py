@@ -69,5 +69,5 @@ class ThreadObserver(threading.Thread):
             else:
                 break
 
-threa = MainThread(count=1)
-threa.start()
+# threa = MainThread(count=1)
+# threa.start()
