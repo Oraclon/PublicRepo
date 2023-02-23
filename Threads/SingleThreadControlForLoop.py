@@ -58,6 +58,6 @@ class MainThread(threading.Thread):
                 time.sleep(2)
                 self.controls.resume()
             time.sleep(0.03)
-s = MainThread()
-s.start()
+# s = MainThread()
+# s.start()
     
