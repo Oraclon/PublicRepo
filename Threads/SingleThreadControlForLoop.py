@@ -47,21 +47,19 @@ class MainThread(threading.Thread):
         self.controls = ThreadControls()
         self.status = self.controls.flag._flag
     def run(self):
-        while self.controls.running.is_set():
-            os.system("clear")
-            t = round(time.time() * 1000, 3)
+        __t = trange(2200, leave=False)
+        for _ in __t:
             self.controls.flag.wait()
+            t = round(time.time() * 1000, 3)
             item = r(100, 10000)
-            if item > 9990:
-                self.controls.stop()
-                print(f"Terminated [{t} | {item}]")
-
-            elif ((item >=9700) and (item <=9989)):
-               self.controls.pause()
-               print(f"Paused [{t} | {item}]")
-               time.sleep(2)
-               self.controls.resume()
-               print(f"Resumed [{t} | {item}]")
+            __t.set_description(f"[{item}]")
+            if item > 9600:
+                self.controls.pause()
+                __t.set_description(f"[{item} | {t}]")
+                time.sleep(2)
+                self.controls.resume()
+            time.sleep(0.03)
+            
 
 s = MainThread()
 s.start()
