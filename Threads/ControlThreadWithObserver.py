@@ -28,7 +28,7 @@ class MainThread(threading.Thread):
         self.name = f"WORK[{count}]"
         self.count = count
         self.controls = ThreadControls()
-        self.counter = 0
+        self.counter = 0 
         self.queue = Queue()
 
         self.observer = ThreadObserver(countrols=self.controls,
