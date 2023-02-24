@@ -22,18 +22,22 @@ class ThreadControls:
         This will control the attached Thread
     """
     def __init__(self):
-        self.running = threading.Event()
-        self.running.set()
-        self.flag = threading.Event()
-        self.flag.set()
+        self.__running = threading.Event()
+        self.__running.set()
+        self.__flag = threading.Event()
+        self.__flag.set()
         
     def pause(self):
-        self.flag.clear()
+        self.__flag.clear()
     def resume(self):
-        self.flag.set()
+        self.__flag.set()
     def stop(self):
-        self.flag.set()
-        self.running.clear()
+        self.__flag.set()
+        self.__running.clear()
+    def check_running(self):
+        return self.__running.is_set()
+    def check_flag(self):
+        self.__flag.wait()
 
 class MainThread(threading.Thread):
     """
@@ -43,21 +47,21 @@ class MainThread(threading.Thread):
     def __init__(self, counter=None):
         super().__init__()
         self.counter = counter
+        self.name = f"[WORKER{self.counter}]"
         self.controls = ThreadControls()
-        self.status = self.controls.flag._flag
     def run(self):
         __t = trange(2200, leave=False)
         for _ in __t:
-            self.controls.flag.wait()
+            self.controls.check_flag()
             t = round(time.time() * 1000, 3)
             item = r(100, 10000)
-            __t.set_description(f"[{item}]")
             if item > 9600:
                 self.controls.pause()
                 __t.set_description(f"[{item} | {t}]")
                 time.sleep(2)
                 self.controls.resume()
             time.sleep(0.03)
+
 # s = MainThread()
 # s.start()
     
