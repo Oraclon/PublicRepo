@@ -3,8 +3,8 @@ from tqdm.auto import tqdm
 
 class DownloadProgressBar:
     """"""
-    def __init__(self, url = None, fileName = None):
-        self.url = url
+    def __init__(self, BaseUrl = None, fileName = None):
+        self.url = BaseUrl
         self.fileName = fileName
         if self.fileName is not None:
             self.fileName = fileName
@@ -25,4 +25,4 @@ class DownloadProgressBar:
             progress.close()
 
 url = 'https://wordnetcode.princeton.edu/2.1/WNsnsmap-2.1.tar.gz'
-DownloadProgressBar(url=url)
+DownloadProgressBar(BaseUrl=url)
