@@ -47,6 +47,8 @@ class MainThread(threading.Thread):
                 __t.set_description(f"[{self.name} | {self.counter} | {round(time.time()* 1000, 2)}]")
                 self.queue.put(1)
             time.sleep(0.03)
+        self.queue.put(None)
+        self.controls.stop()
 
 class ThreadObserver(threading.Thread):
     def __init__(self, cid=None, queue=None):
@@ -61,6 +63,8 @@ class ThreadObserver(threading.Thread):
                 self.PauseAll(self.cid)
                 time.sleep(2)
                 self.ResumeAll(self.cid)
+            else:
+                break
 
     def PauseAll(self, running):
         for idx, item in runningThreads.items():
