@@ -1,0 +1,77 @@
+@import "./custom.scss";
+.card
+{
+    // border-bottom: 1px solid rgba(21,21,21,.4);
+    box-shadow: $card_shadow;
+    overflow: hidden;
+
+    .have_prop{ fill: $success; }
+    .not_have_prop{ fill: $danger; }
+
+    .btn
+    {
+        padding: 4px 8px;
+    }
+
+    img
+    {
+        // height: 226px;
+        height: 200px;
+        object-fit: cover;
+        object-position: center;
+        border-radius: $card-border-radius;
+    }
+    .property_info
+    {
+        color: $main_color;
+        font-size: $card_main_font_size;
+        font-weight: 500;
+    }
+    .property_location
+    {
+        color: $sub_color;
+        font-size: $card_sub_font_size;
+        font-weight: 100;
+    }
+    .property_price_and_controls
+    {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 0;
+        gap: 20px;
+        border-bottom: 1px solid rgba(21,21,21,.2);
+        
+        .property_price
+        {
+            font-size: 28px;
+            font-weight: 700;
+            .is_rent
+            {
+                margin-left: 4px;
+                font-weight: 100;
+                font-size: 12px;
+            }
+        }
+    }
+    .property_bottom
+    {
+        display: flex; 
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 10px;
+        .property_icons
+        {
+            fill: rgba(21,21,21,.6);
+            display: flex;
+            font-size: $card_sub_font_size;
+            gap: 10px;
+            justify-content: space-around;
+        }
+
+        .property_updated
+        {
+            font-size: 10px;
+        }
+    }
+}
