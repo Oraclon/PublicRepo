@@ -73,6 +73,33 @@ html,body
             }
         }
         
+        .property-tab.property-first-info
+        {
+            @include flex();
+
+            .property-favourite
+            {
+                @include flex();
+                justify-content: center;
+                width: 2.6rem; height: 2.6rem;
+                border-radius: 50%;
+                box-shadow: $inner-shadow;
+            }
+
+            .property-favourite.active
+            {
+                color: white;
+                background: $medBlue;
+                transition: background ease .4s, color ease .4s;
+            }
+            .property-favourite.inactive
+            {
+                color: rgb(15,15,15);
+                background: white;
+                transition: background ease .4s, color ease .4s;
+            }
+        }
+        
         .property-tab.first-amenities
         {
             display: flex;
