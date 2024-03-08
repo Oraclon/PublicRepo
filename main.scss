@@ -48,7 +48,6 @@ html,body
     .property-tabs-holder
     {
         padding: .5rem;
-        // background: $softGray;
 
         .property-tab
         {
@@ -72,8 +71,26 @@ html,body
                 color: rgba(15,15,15,.8);
                 text-align: justify;
             }
+            .property-first-amenities
+            {
+                @include flex();
+            }
         }
         
+        .property-tab.property-author
+        {
+            @include flex();
+            justify-content: start;
+            gap: 2rem;
+            .author-img-section
+            {
+                width: 3rem; height: 3rem;
+                background: $softBlue;
+                border-radius: 50%;
+                
+            }
+        }
+
         .property-tab.property-first-info
         {
             @include flex();
@@ -122,7 +139,7 @@ html,body
     }
     //#endregion
 
-    //#region [Property Menu]
+    //#region [Mobile Menu]
     .mobile-menu
     {
         @include flex;
