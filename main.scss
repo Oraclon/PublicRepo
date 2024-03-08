@@ -1,0 +1,158 @@
+$main-background: #151515;
+$green-color: #c6e829;
+$main-bg: #f5f5e9;
+
+$menu-shadow: 0px 2px 12px rgba(15,15,15,.4);
+$inner-shadow: 5px 5px 10px #e6e6e6, -5px -5px 10px #ffffff;
+$item-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+
+$main-border-radius: .6rem;
+
+@font-face
+{
+   font-family: test1;
+   src: url('../src/assets/fonts/Play-Regular.ttf') format('truetype');
+}
+
+@mixin flex()
+{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+@keyframes example
+{
+    from{ margin-bottom: -100px; }
+    to{ margin-bottom: -1px; }
+}
+
+$softGray : #ededed;
+$medGray: #a4a4a4;
+$softBlue : #246cfd9d;
+$medBlue : #246cfd;
+html,body
+{
+    // font-family: 'MyFont', 'arial', sans-serif;
+    width: 100%; height: 100%;
+    margin: 0; padding: 0;
+    // font-family: "Comfortaa", sans-serif;
+    // font-optical-sizing: auto;
+    // font-style: normal;
+    
+    
+    
+    .items-holder
+    {
+        font-family: test1;
+        
+        padding: .4rem;
+
+        .item-box
+        {
+            border-radius: $main-border-radius;
+            box-shadow: $item-shadow;
+            margin-bottom: 1rem;
+
+            .item-title
+            {
+                font-size: 1.4rem;
+            }
+        }
+        
+        .empty-space
+        {
+            padding: 1.4rem;
+        }
+    }
+
+    .property-menu
+    {
+        @include flex;
+        font-family: test1, sans-serif;
+        background: white;
+        color: black;
+        cursor: pointer;
+        box-shadow: $menu-shadow;
+        border-top-left-radius: $main-border-radius;
+        border-top-right-radius: $main-border-radius;
+        overflow: hidden;
+        margin-bottom: -100px;
+        padding: .5rem 1rem;
+        border-top: 1px solid $softBlue;
+
+        .property-menu-price-area
+        {
+            @include flex;
+            flex-direction: column;
+            align-items: center;
+
+            .price
+            {
+                font-weight: 700;
+                font-size: 1.8rem;
+            }
+            .price-info
+            {
+                font-weight: 200;
+                font-size: .7rem;
+                margin-top: -10px;
+                color: $medGray;
+            }
+        }
+        .property-menu-controls-area
+        {
+            position: relative;
+            @include flex;
+            justify-content: space-evenly;
+            gap: .6rem;
+            width: 60%;
+
+            .control-item
+            {
+                position: relative;
+                @include flex;
+                flex-direction: column;
+
+                .control-item-icon
+                {
+
+                }
+                .control-item-name
+                {
+                    font-size: .6rem;
+                }
+            }
+            .active-point
+            {
+                position: absolute;
+                width: 10px; height: 10px;
+                border-radius: 50%;
+                background: red;
+                top: -20px;
+                left: 50%;
+                -webkit-transform: translateX(-50%);
+                transform: translateX(-50%)
+            }
+            .control-item.active
+            {
+                color: $medBlue;
+            }
+
+            .test
+            {
+                background: red;
+                width: 30px; height: 30px;
+            }
+            
+        }
+        
+    }
+
+    .property-menu.show
+    {
+        animation: example;
+        animation-duration: .4s;
+        animation-fill-mode: forwards;
+    }
+}
