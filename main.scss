@@ -152,7 +152,7 @@ html,body
         border-top-right-radius: $main-border-radius;
         overflow: hidden;
         margin-bottom: -100px;
-        padding: .5rem 1rem;
+        padding: .4rem 1rem;
         border-top: 1px solid $softBlue;
 
         .navigation-items
@@ -171,6 +171,9 @@ html,body
             }
             .nav-item.active
             {
+                box-shadow: $item-shadow;
+                padding: .4rem;
+                border-radius: $main-border-radius;
                 color: $medBlue;
             }
         }
@@ -178,7 +181,7 @@ html,body
 
     .mobile-menu.main-menu
     {
-        padding: .8rem;
+        // padding: .4rem 1rem;
     }
 
     .mobile-menu.property-menu
