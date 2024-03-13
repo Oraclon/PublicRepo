@@ -64,8 +64,47 @@ $border-radius: .6rem;
         grid-area: body;
         background: green;
         // border: 1px solid aqua;
-        padding: 1rem;
+        // padding: 1rem;
+        padding: 0;
         
+        //#region [Properties] structure
+        .inst-properties-container
+        {
+            padding: .4rem;
+            display: grid;
+            grid-template-areas: 
+            "properties properties properties properties map map";
+            grid-template-columns: repeat(6, 1fr);
+            gap: .4rem;
+            height: fit-content;
+            
+            .inst-properties
+            {
+                grid-area: properties;
+
+                .properties-container
+                {
+                    display: grid;
+                    grid-template-columns: repeat(4, 1fr);
+                    gap: .8rem;
+
+                    .property
+                    {
+                        padding: .6rem;
+                        background: yellowgreen;
+                    }
+                }
+            }
+            .inst-properties-map
+            {
+                grid-area: map;
+                height: fit-content;
+                position: sticky;
+                top: 60px;
+                background: purple;
+            }
+        }
+        //#endregion
         //#region [Property Page] structure
         .inst-property-container
         {
@@ -121,8 +160,40 @@ $border-radius: .6rem;
     }
     //#endregion
 }
+@media(max-width: 1200px)
+{
+    .inst-container
+    {
 
-@media(max-width: 600px)
+        .inst-body-container
+        {
+            .inst-properties-container
+            {
+                grid-template-areas: 
+                "map        map"
+                "properties properties";
+                grid-template-columns: repeat(2, 1fr);
+                .inst-properties
+                {
+                    .properties-container
+                    {
+                        grid-template-columns: repeat(2, 1fr);
+
+                        .property
+                        {
+                            padding: .6rem;
+                            background: yellowgreen;
+                        }
+                    }
+                }
+            }
+        }
+
+        
+        
+    }
+}
+@media(max-width: 800px)
 {
     .item.carousel
     {
@@ -147,7 +218,6 @@ $border-radius: .6rem;
         {
             .inst-property-container
             {
-                width: 100%;
                 grid-template-columns: repeat(2, 1fr);
                 grid-template-areas: 
                 "carousel carousel"
@@ -160,7 +230,40 @@ $border-radius: .6rem;
                     top:0;
                 }
             }
+
+            .inst-properties-container
+            {
+                grid-template-areas: 
+                "map"
+                "properties";
+                grid-template-columns: 1fr;
+                background: red;
+
+                .inst-properties-map
+                {
+                    grid-area: map;
+                    height: fit-content;
+                    position: sticky;
+                    top: 0;
+                }
+
+                .inst-properties
+                {
+                    .properties-container
+                    {
+                        grid-template-columns: repeat(1, 1fr);
+
+                        .property
+                        {
+                            padding: .6rem;
+                            background: yellowgreen;
+                        }
+                    }
+                }
+            }
         }
+
+        
         
     }
 
