@@ -1,0 +1,130 @@
+html, body
+{
+    width: 100%; height: 100%;
+    margin: 0; padding: 0;
+    background: white;
+}
+
+$template-space: .6rem;
+$item-spacer: 1rem;
+$border-radius: .6rem;
+
+.wrapper
+{
+    display: grid;
+    gap: $template-space;
+    padding: $template-space;
+    grid-template-columns: repeat(5, 1fr);
+
+    .item
+    {
+        padding: $item-spacer;
+        border-radius: $border-radius;
+        background: rgba(128, 92, 0, 0.608);
+        display: grid;
+        grid-template-rows: repeat(3, 1fr);
+        color: white;
+        height: 275px;
+
+        .top
+        {
+            grid-row: 1;
+            display: grid;
+            grid-template-columns: 4fr 1fr;
+            height: fit-content;
+            
+            .info
+            {
+                grid-column: 1;
+
+                .prop-id{ font-size: 1rem; }
+                .prop-name{ font-size: 1rem; }
+                .prop-location{ font-size: 1rem; }
+            }
+            .controls
+            {
+                justify-self: end;
+                grid-column: 2;
+                width: fit-content;
+                display: flex;
+                flex-direction: column;
+                gap: .4rem;
+                
+                .control
+                {
+                    cursor: pointer;
+                }
+            }
+        }
+        .middle
+        {
+            display: flex;
+            grid-template-columns: 1fr;
+            grid-row: 2;
+            align-items: center;
+            justify-content: space-between;
+            
+            .slide-control
+            {
+                padding: 0 2rem;
+                cursor: pointer;
+            }
+        }
+        .bottom
+        {
+            // display: grid;
+            grid-template-columns: 1fr;
+            grid-row: 3;
+            place-self: end center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: .6rem;
+            
+            .price
+            {
+                font-size: 2.5rem;
+                font-weight: 400;
+            }
+            .amenities
+            {
+                display: flex;
+                gap: 2rem;
+
+                .amenity
+                {
+                    display: grid;
+                    grid-template-columns: 1fr 3fr;
+                    gap: .4rem;
+                    place-self: end center;
+
+                    .icon
+                    {
+                        grid-column: 1;
+                        font-size: 1rem;
+                    }
+                    .info
+                    {
+                        grid-column: 2;
+                        font-size: 1rem;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media(max-width: 1200px)
+{}
+
+@media(max-width: 500px)
+{
+    .wrapper
+    {
+        grid-template-columns: repeat(1, 1fr);
+        .item
+        {
+            width: 100%;
+        }
+    }
+}
