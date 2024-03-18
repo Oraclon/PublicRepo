@@ -1,0 +1,166 @@
+html, body
+{
+    background: rgb(15,15,15);
+    width: 100%; height: 100%;
+    padding: 0; margin: 0;
+}
+
+$padding: .5rem;
+$mainPadding: $padding * 2;
+
+@mixin stick($position: "top")
+{
+    position: sticky;
+    height: fit-content;
+    @if($position == "top")
+    {
+        top: 0;
+    }
+    @else
+    {
+        bottom: 0;
+    }
+}
+
+.item
+{
+    padding: .6rem;
+    background: rgb(195, 166, 0);
+    color: white;
+    border-radius: .4rem;
+}
+
+.container
+{
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(4, auto);
+
+    .row
+    {
+        padding: 1rem;
+        color: white;
+        
+        //Menu
+        &:nth-child(1)
+        {
+            @include stick(top);
+            grid-column: 1/-1;
+            grid-row: 1;
+            background: rgb(0, 70, 128);
+            height: fit-content;
+            z-index: 99;
+        }
+        //Body
+        &:nth-child(2)
+        {
+            grid-row: 2;
+            grid-column: 1/6;
+            background: green;
+            gap: .6rem;
+            overflow-y: scroll;
+            height: 100vh;
+            max-height: calc(100vh - 130px);
+            
+            display: grid;
+            grid-template-rows: repeat(2, auto);
+            height: fit-content;
+
+            .inner
+            {
+                &:nth-child(1)
+                {
+                    @include stick(top);
+                    grid-row: 1;
+                    
+                }
+                &:nth-child(2)
+                {
+                    display: grid;
+                    grid-template-columns: repeat(3, 1fr);
+                    gap: .6rem;
+                    grid-row: 2;
+                }
+            }
+        }
+        //Map
+        &:nth-child(3)
+        {
+            grid-row: 2;
+            grid-column: 6/-1;
+            background: rgb(84, 20, 212);
+            border-bottom-left-radius: 1rem;
+            border-bottom-right-radius: 1rem;
+            overflow: hidden;
+        }
+        //Footer
+        &:nth-child(4)
+        {
+            @include stick(bottom);
+            grid-row: 3;
+            grid-column: 1/-1;
+            background: brown;
+        }
+    }    
+}
+
+@media(max-width: 500px)
+{
+    .container
+    {   
+        .row
+        {
+            //Menu
+            &:nth-child(1)
+            {
+                grid-column: 1/-1;
+                grid-row: 3;
+                @include stick(bottom);
+            }
+            //Body
+            &:nth-child(2)
+            {
+                max-height: calc(60vh - 100px);
+                grid-column: 1/-1;
+                grid-row: 2;
+                overflow-y: scroll;
+
+                display: grid;
+                grid-template-rows: repeat(2, auto);
+                height: fit-content;
+
+                .inner
+                {
+                    &:nth-child(1)
+                    {
+                        grid-row: 2;
+                        @include stick(bottom);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    }
+                    &:nth-child(2)
+                    {
+                        display: grid;
+                        grid-template-columns: repeat(1, 1fr);
+                        gap: .6rem;
+                        grid-row: 1;
+                    }
+                }
+            }
+            //Map
+            &:nth-child(3)
+            {
+                height: 40vh;
+                grid-column: 1/-1;
+                grid-row: 1;
+            }
+            //Footer
+            &:nth-child(4)
+            {
+                grid-column: 1/-1;
+                grid-row: 4;
+            }
+        }
+    }
+}
