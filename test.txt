@@ -1,0 +1,44 @@
+#region [Data]
+        double[] red   = new double[]{1,0,0};
+        double[] green = new double[]{0,1,0};
+        double[] blue  = new double[]{0,0,1};
+        List<double[]> data = new List<double[]>();
+        
+        double[][] inputs = new double[][]{
+            new double[]{0.0000, 0.0000},
+            new double[]{0.2778, 0.2500},
+            new double[]{0.2778, 0.9375},
+            new double[]{0.9167, 0.6563},
+            new double[]{0.4167, 0.2500},
+            new double[]{0.3611, 0.3438},
+            new double[]{0.3333, 0.4063},
+            new double[]{0.9722, 0.3750},
+            new double[]{0.0833, 0.3438},
+            new double[]{0.6389, 0.3438},
+            new double[]{0.4167, 0.6875},
+            new double[]{0.7500, 0.6875},
+            new double[]{0.0833, 0.1875},
+            new double[]{0.9167, 0.5313},
+            new double[]{0.1389, 0.2500},
+            new double[]{0.8333, 0.6250},
+            new double[]{0.8056, 0.6250},
+            new double[]{0.1944, 1.0000},
+            new double[]{0.8333, 0.5625},
+            new double[]{0.4167, 1.0000},
+            new double[]{1.0000, 0.6875},
+            new double[]{0.4722, 0.6563},
+            new double[]{0.3611, 0.5625},
+            new double[]{0.4722, 0.8438},
+            new double[]{0.1667, 0.3125},
+            new double[]{0.4167, 0.9375},
+            new double[]{0.3611, 0.9688},
+            new double[]{0.9167, 0.3438},
+            new double[]{0.0833, 0.0313},
+            new double[]{0.3333, 0.8750}
+        };
+        double[][] targets = new double[][]{
+            red, red, blue, green, red, red, red, green, red, green, blue, green, red,
+            green, red, green, green, blue, green, blue, green, blue, blue, blue,
+            red, blue, blue, green, red, blue
+        };
+        #endregion
