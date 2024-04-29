@@ -1,4 +1,5 @@
 import math;
+import random as r;
 
 #region [Data]
 red: list[float]   = [ 1, 0, 0 ];
@@ -27,7 +28,8 @@ targets: list[list[float]] = [
 #endregion
 
 #region [Gradient]
-weights: list[list[float]] = [ [.1, .2], [.15, .25], [.18, .1] ];
+weights: list[list[float]] = [[r.random() for _ in range(2)] for _ in range(3)];
+# weights: list[list[float]] = [ [.1, .2], [.15, .25], [.18, .1] ];
 biases: list[float] = [ .3, .4, .35 ];
 epochs: int = 100;
 learning_rate: float = .1;
@@ -40,8 +42,10 @@ def Softmax(predictions: list[float]) -> list[float]:
     return [t / total for t in tmp];
 
 def LogLoss(activations: list[float], targets: list[float]) -> float:
-    losses: list[float] = [-t * math.log(a) - (1 - t) * math.log(1 - a)
+    losses: list[float] = [-math.log(a) if t == 1 else -math.log(1-a)
                 for a,t in zip(activations, targets)];
+    # losses: list[float] = [-t * math.log(a) - (1 - t) * math.log(1 - a)
+    #             for a,t in zip(activations, targets)];
     return sum(losses);
 
 for epoch in range(epochs):
@@ -51,7 +55,9 @@ for epoch in range(epochs):
     act  = [Softmax(p) for p in pred];
     cost = sum([LogLoss(ac, ta) for ac, ta in zip(act, targets)]) / len(act);
 
-    errors_d = [[a - t for a,t in zip(ac, ta)] for ac, ta in zip(act, targets)];
+    errors_d = [[ (-1 / a) if t == 1 else (1 / ( 1 - a )) for a,t in zip(ac, ta)] for ac, ta in zip(act, targets)];
+    # errors_d = [[a - t for a,t in zip(ac, ta)] for ac, ta in zip(act, targets)];
+
     inputsT  = list(zip(*inputs));
     errordT  = list(zip(*errors_d));
 
