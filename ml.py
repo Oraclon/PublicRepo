@@ -1,3 +1,14 @@
+def LogLoss(a:float, t:float) -> float:
+    return -math.log(a) if t == 1 else -math.log(1-a);
+
+def Deriv(a,t) -> float:
+    res: float = 0;
+    if t == 1:
+        res = ((-1 / a) * (a * (1 - a)));
+    else:
+        res = ((-1 / (1 - a)) * (a * (a - 1)));
+    return res;
+    
 import math;
 import random as r;
 #region [Node]
