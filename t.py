@@ -5,14 +5,11 @@ class Activ:
     def __init__(self):
         self.activation: list[float] = [];
         self.derivative: list[float] = [];
-    
     def Calculate(self, activation: list[float]):
         self._ApplySoftmax(activation);
         self._CalculateDerivative();
-    
     def _ApplySoftmax(self, activation: list[float]):
-        self.activation = [x / sum(activation) for x in activation];
-    
+        self.activation = [x/sum(activation) for x in activation];
     def _CalculateDerivative(self):
         result: list[float] = [];
         for i, i1 in enumerate(self.activation):
@@ -22,7 +19,9 @@ class Activ:
                     calcs.append(i1*(1-i2));
                 else:
                     calcs.append(-i1*i2);
+            # result.append(calcs);
             result.append(sum(calcs));
+        # self.derivative = [sum(x) for x in list(zip(*result))];
         self.derivative = result;
 class Grad:
     def __init__(self):
@@ -36,6 +35,7 @@ class Node:
         self.derivatives: list[float] = [];
         self.deltas:      list[float] = [];
         self.wdeltas:     list[float] = [];
+        self.a = 2.2;
     def __BuildGrad(self, input: list[float]):
         self.grad.w = [r.random() for _ in range(len(input))];
         self.ready = True;
@@ -62,9 +62,11 @@ class Node:
         self.wdeltas = calcs;
     def NodeUpdate(self):
         for i in range(len(self.grad.w)):
-            tmpw = self.grad.w[i] - 0.4 * (sum(self.wdeltas[i])/len(self.deltas));
+            # tmpw = self.grad.w[i] - 0.4 * (sum(self.wdeltas[i]));
+            tmpw = self.grad.w[i] - self.a * (sum(self.wdeltas[i])/len(self.deltas));
             self.grad.w[i] = tmpw;
-        tmpb = self.grad.b - 0.4 * (sum(self.deltas)/len(self.deltas));
+        # tmpb = self.grad.b - 0.4 * (sum(self.deltas));
+        tmpb = self.grad.b - self.a * (sum(self.deltas)/len(self.deltas));
         self.grad.b = tmpb;
 class Data:
     def __init__(self, input: list[float], target: list[float]):
@@ -80,15 +82,20 @@ def ApplySoftmax(activations: list[list[float]]):
         activations.append(a);
     return activations;
 def LossCalculation(acts: list[float], targets: list[float]):
-    calcs: list[float] = [pow(a-t, 2) for a,t in zip(acts, targets)];
-    return sum(calcs) / len(calcs);
+    # calcs: list[float] = [-math.log(a) if t == 1 else -math.log(1-a) for a,t in zip(acts, targets)];
+    # calcs: list[float] = [pow(a-t,2) for a,t in zip(acts, targets)];
+    calcs: list[float] = [-t*math.log(a) for a,t in zip(acts, targets)];
+    res = sum(calcs) / len(calcs);
+    return res;
 def LossDerivatives(acts: list[float], tars: list[float]):
-    calcs: list[float] = [2*(a-t) for a,t in zip(acts, tars)];
+    # calcs: list[float] = [-1/a if t == 1 else 1/(1-a) for a,t in zip(acts, tars)];
+    # calcs: list[float] = [2*(a-t) for a,t in zip(acts, tars)];
+    calcs: list[float] = [-t/a for a,t in zip(acts, tars)];
     return calcs;
 
 setosa:     list[float] = [0,0,1];
 versicolor: list[float] = [0,1,0];
-virginica:  list[float] = [0,0,1];
+virginica:  list[float] = [1,0,0];
 inputs: list[float] = [
     [5.1,3.5,1.4,0.2],
     [4.9,3.0,1.4,0.2],
@@ -396,37 +403,40 @@ targets: list[list[float]] = [
 
 data: list[Data] = [Data(i,t) for i,t in zip(inputs, targets)];
 [r.shuffle(data) for _ in range(10)];
+batches: list[list[Data]] = [data[x:x+32] for x in [x for x in range(0, len(data), 32)]]
 pass
 
 node1: Node = Node();
 node2: Node = Node();
 node3: Node = Node();
-
+loss = 0;
 for epoch in range(1000):
-    inps: list[list[float]] = [x.inputs for x in data];
-    tars: list[list[float]] = [x.targets for x in data];
+    for batch in batches:
+        inps: list[list[float]] = [x.inputs for x in batch];
+        tars: list[list[float]] = [x.targets for x in batch];
 
-    nodes: list[Node] = [node1, node2, node3];
-    [node.NodeTrain(inps) for node in nodes];
-    res: list[Activ] = ApplySoftmax([node.activations for node in nodes]);
-    acts: list[list[float]] = [x.activation for x in res];
-    ders: list[list[float]] = [x.derivative for x in res];
-    loss = sum([LossCalculation(act, tar) for act, tar in zip(acts, targets)])/len(targets);
-    ldersT = list(zip(*[LossDerivatives(act, tar) for act, tar in zip(acts, targets)]));
-    #region [Update Node Activations/Derivatives]
-    actsT = list(zip(*acts));
-    dersT = list(zip(*ders));
-    for nid, node in enumerate(nodes):
-        node.activations = actsT[nid];
-        node.derivatives = dersT[nid];
-    #endregion
-    #region [Update Node Deltas]
-    for nid, node in enumerate(nodes):
-        node.NodeDeltas(ldersT[nid], inputs)
-    #endregion
-    #region [Update Node]
-    for nid, node in enumerate(nodes):
-        node.NodeUpdate()
-    #endregion
+        nodes: list[Node] = [node1, node2, node3];
+        [node.NodeTrain(inps) for node in nodes];
+        res: list[Activ] = ApplySoftmax([node.activations for node in nodes]);
+        acts: list[list[float]] = [x.activation for x in res];
+        ders: list[list[float]] = [x.derivative for x in res];
+        loss = sum([LossCalculation(act, tar) for act, tar in zip(acts, tars)])/len(tars);
+        # loss = sum([LossCalculation(act, tar) for act, tar in zip(acts, tars)])/(2*len(tars));
+        ldersT = list(zip(*[LossDerivatives(act, tar) for act, tar in zip(acts, tars)]));
+        #region [Update Node Activations/Derivatives]
+        actsT = list(zip(*acts));
+        dersT = list(zip(*ders));
+        for nid, node in enumerate(nodes):
+            node.activations = actsT[nid];
+            node.derivatives = dersT[nid];
+        #endregion
+        #region [Update Node Deltas]
+        for nid, node in enumerate(nodes):
+            node.NodeDeltas(ldersT[nid], inps)
+        #endregion
+        #region [Update Node]
+        for nid, node in enumerate(nodes):
+            node.NodeUpdate()
+        #endregion
     print(loss)
     pass
