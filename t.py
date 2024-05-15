@@ -1,3 +1,512 @@
+#region [Main]
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace MLV3
+{
+    public class Grad2
+    {
+        public double[] w { get; set; }
+        public double b { get; set; }
+    }
+    public class MLLayer2
+    {
+        #region [Constructor and Variables]
+        public MLLayer2(Model md, int nd, Activation act = Activation.Default, Optimizer opt = Optimizer.Default)
+        {
+            model      = md;
+            nodeslen   = nd;
+            activation = act;
+            optimizer  = opt;
+            nodes = new Dictionary<int, MLNode2>();
+            _BuildNodes();
+        }
+        #region [Variables]
+        #region [Internal Variables]
+        int nodeid { get; set; }
+        int nodeslen { get; set; }
+        Model model { get; set; }
+        Activation activation { get; set; }
+        Optimizer optimizer { get; set; }
+        Dictionary<int, MLNode2> nodes { get; set; }
+        #endregion
+        #region [Public Variables]
+        public double[][] layeractivations { get; set; }
+        public double[][] layerdeltas      { get; set; }
+        #endregion
+        #endregion
+        #endregion
+        #region [Public Methods]
+        public void LayerTrain(double[][] inputs)
+        {
+            double[][] tmpactivs = new double[nodeslen][];
+            for (nodeid = 0; nodeid < nodeslen; nodeid++)
+            {
+                nodes[nodeid].NodeTrain(inputs);
+                tmpactivs[nodeid] = nodes[nodeid].activations;
+            }
+            layeractivations = tmpactivs.Transposer();
+        }
+        public void LayerDeltas(double[][] pders, double[][] respect)
+        {
+            double[][] deltas = new double[nodeslen][];
+            for (nodeid = 0; nodeid < nodeslen; nodeid++)
+            {
+                nodes[nodeid].NodeLDeltas(pders, respect);
+                deltas[nodeid] = nodes[nodeid].deltas;
+            }
+            layerdeltas = deltas.Transposer();
+        }
+        public void LayerUpdate()
+        {
+            for (nodeid = 0; nodeid < nodeslen; nodeid++)
+            {
+                nodes[nodeid].NodeUpdate();
+            }
+        }
+        #endregion
+        #region [Private Methods]
+        private void _BuildNodes()
+        {
+            for (nodeid = 0; nodeid < nodeslen; nodeid++)
+            {
+                nodes.Add(nodeid, new MLNode2(model, activation, optimizer));
+            }
+        }
+        #endregion
+    }
+    public class MLNode2
+    {
+        #region [Contructor and Variables]
+        public MLNode2(Model md, Activation act = Activation.Default, Optimizer opt = Optimizer.Default)
+        {
+            activation = act;
+            optimizer  = opt;
+            model = md;
+        }
+        #region [Variables]
+        Grad2 grad { get; set; } = new Grad2();
+        Model model          { get; set; }
+        Activation activation       { get; set; }
+        Optimizer optimizer         { get; set; }
+        public double[] activations { get; set; }
+        public double[] derivatives { get; set; }
+        public double[] deltas      { get; set; }
+        public double[][] wDeltas   { get; set; }
+        public bool ready           { get; set; } = false;
+        public int featureid        { get; set; }
+        #endregion
+        #endregion
+        #region [Public Methods]
+        #region [Evaluation]
+        public PredResult NodeEvaluate(double[] features)
+        {
+            PredResult pred = new PredResult();
+            double[] calculations = new double[features.Length];
+            for (int i = 0; i < features.Length; i++)
+            {
+                calculations[i] = grad.w[i] * features[i];
+            }
+            double prediction = calculations.Sum() + grad.b;
+
+            switch (activation)
+            {
+                case Activation.Tanh:
+                    pred.activation = Math.Tanh(prediction);
+                    pred.actDeriv = 1 - Math.Pow(pred.activation, 2);
+                    break;
+                case Activation.Sigmoid:
+                    pred.activation = 1 / (1 + Math.Exp(-prediction));
+                    pred.actDeriv = pred.activation * (1 - pred.activation);
+                    break;
+                case Activation.SoftMax:
+                    pred.activation = Math.Exp(prediction);
+                    pred.actDeriv = -1;
+                    break;
+            }
+            return pred;
+        }
+        #endregion
+        #region [Training]
+        public void NodeTrain(double[][] inputs)
+        {
+            if (!ready)
+                _BuildGrad(inputs[0]);
+
+            double[] tmp_acts = new double[inputs.Length];
+            double[] tmp_ders = new double[inputs.Length];
+            for (int i = 0; i < inputs.Length; i++)
+            {
+                PredResult pred = NodeEvaluate(inputs[i]);
+                tmp_acts[i] = pred.activation;
+                tmp_ders[i] = pred.actDeriv;
+            }
+            activations = tmp_acts;
+            derivatives = tmp_ders;
+        }
+        public void NodeLDeltas(double[][] pders, double[][] respect)
+        {
+            double[] tmpdeltas = new double[pders.Length];
+            for (int i = 0; i < tmpdeltas.Length; i++)
+            {
+                tmpdeltas[i] = pders[i].Length > 1 ? pders[i].Sum() / pders.Length : pders[i][0];
+            }
+            NodeDeltas(tmpdeltas, respect);
+        }
+        public void NodeDeltas(double[] pders, double[][] respect)
+        {
+            double[] dgda = new double[derivatives.Length];
+            for (int i = 0; i < dgda.Length; i++)
+            {
+                double dg = pders[i];
+                double da = derivatives[i];
+                dgda[i] = dg * da;
+            }
+            deltas = dgda;
+            _NodeWDeltas(respect);
+        }
+        public void NodeUpdate()
+        {
+            for (featureid = 0; featureid < wDeltas.Length; featureid++)
+            {
+                double oldw = grad.w[featureid] - _GetDGDW();
+                grad.w[featureid] = oldw;
+            }
+            double oldb = grad.b - _GetDGDB();
+            grad.b = oldb;
+        }
+        #endregion
+        #endregion
+        #region [Private Methods]
+        private double _GetDGDB()
+        {
+            double[] calcs = new double[deltas.Length];
+            for (int i = 0; i < calcs.Length; i++)
+            {
+                calcs[i] = deltas[i] * model.learning;
+            }
+            return calcs.Sum() / calcs.Length;
+        }
+        private double _GetDGDW()
+        {
+            double[] calcs = new double[deltas.Length];
+            for (int i = 0; i < calcs.Length; i++)
+            {
+                calcs[i] = wDeltas[featureid][i] * model.learning;
+            }
+            return calcs.Sum() / calcs.Length;
+        }
+        private void _NodeWDeltas(double[][] respect)
+        {
+            double[][] respt = respect.Transposer();
+            double[][] dgdw = new double[respt.Length][];
+            for (int i = 0; i < dgdw.Length; i++)
+            {
+                double[] dws = new double[deltas.Length];
+                for (int j = 0; j < dws.Length; j++)
+                {
+                    double da = deltas[j];
+                    double dw = respt[i][j];
+                    dws[j] = da * dw;
+                }
+                dgdw[i] = dws;
+            }
+            wDeltas = dgdw;
+        }
+        private void _BuildGrad(double[] features)
+        {
+            Random rand = new Random();
+            grad.w = Enumerable.Range(0, features.Length).Select(x => rand.NextDouble()).ToArray();
+            ready = true;
+        }
+        #endregion
+    }
+    public class Node : NodeStorage
+    {
+        #region Constructor and Variables
+        public Node(Model md, Activation act, Optimizer opt)
+        {
+            model = md;
+            actType = act;
+            optimizer = opt;
+        }
+        public Model model { get; set; }
+        public double[][] softmaxDers { get; set; }
+        public Gradient grad;
+        public Activation actType { get; set; }
+        public Optimizer optimizer { get; set; }
+        #endregion
+
+
+
+        private void _GetWDeltasV2(double[][] respect)
+        {
+            double[][] calculations = new double[respect.Length][];
+            for (int i = 0; i < respect.Length; i++)
+            {
+                double da = deltas[i];
+                double[] dw = respect[i];
+                double[] tmp = new double[dw.Length];
+                for (int j = 0; j < tmp.Length; j++)
+                {
+                    tmp[j] = da * dw[j];
+                }
+                calculations[i] = tmp;
+            }
+            wDeltas = calculations.Transposer();
+        }
+        public void SoftmaxDeltas(double[] lossDerivatives, double[][] respectTo)
+        {
+            double[] calculations = new double[lossDerivatives.Length];
+            for (int i = 0; i < calculations.Length; i++)
+            {
+                double dg = lossDerivatives[i];
+                double[] da = softmaxDers[i];
+                double[] tmp = new double[da.Length];
+                for (int j = 0; j < da.Length; j++)
+                {
+                    tmp[j] = dg * da[j];
+                }
+                calculations[i] = tmp.Sum();
+            }
+            deltas = calculations;
+            _GetWDeltasV2(respectTo);
+        }
+
+        #region Node Common
+        private void _BuildGrad(double[][] inputs)
+        {
+            storageInps = inputs;
+            grad.gradInps = inputs;
+            for (featureId = 0; featureId < featuresLen; featureId++)
+            {
+                grad.w[featureId] = model.rand.NextDouble() - .5;
+            }
+            grad.isReady = true;
+        }
+        private void _GetWDeltas(double[][] respectTo)
+        {
+            double[][] respT = DA.Transposer(respectTo);
+            for (featureId = 0; featureId < featuresLen; featureId++)
+            {
+                double[] tmpWDelta = new double[dataLen];
+                double[] tmpWDeltaPow = new double[dataLen];
+                double[] wFeatures = respT[featureId];
+
+                for (itemId = 0; itemId < dataLen; itemId++)
+                {
+                    double delta = deltas[itemId];
+                    double wFeat = wFeatures[itemId];
+                    tmpWDelta[itemId] = delta * wFeat;
+                    tmpWDeltaPow[itemId] = Math.Pow(delta * wFeat, 2);
+                }
+                wDeltas[featureId] = tmpWDelta;
+                wDeltasPow[featureId] = tmpWDeltaPow;
+            }
+        }
+        private double _GetJW(bool isPow = false)
+        {
+            if (!isPow)
+                return wDeltas[featureId].Calculate(model.learning) / dataLen;
+            else
+                return wDeltasPow[featureId].Sum() / dataLen;
+        }
+        private double _GetJ(bool isPow = false)
+        {
+            if (!isPow)
+                return deltas.Calculate(model.learning) / dataLen;
+            else
+                return deltasPow.Sum() / dataLen;
+        }
+        #endregion
+
+        #region Node Update
+        private void Default()
+        {
+            for (featureId = 0; featureId < featuresLen; featureId++)
+            {
+                //double old_w = grad.w[featureId] - model.learning * _GetJW();
+                double old_w = grad.w[featureId] - _GetJW();
+                grad.w[featureId] = old_w;
+            }
+            double old_b = grad.b - _GetJ();
+            grad.b = old_b;
+        }
+        private void Momentum()
+        {
+            for (featureId = 0; featureId < featuresLen; featureId++)
+            {
+                double old_vdw = model.b1 * grad.vdw[featureId] + (1 - model.b1) * _GetJW();
+                grad.vdw[featureId] = old_vdw;
+                double tmp_w = grad.w[featureId] - model.learning * grad.vdw[featureId];
+                grad.w[featureId] = tmp_w;
+            }
+            double old_vdb = model.b1 * grad.vdb + (1 - model.b1) * _GetJ();
+            grad.vdb = old_vdb;
+            double tmp_b = grad.b - model.learning * grad.vdb;
+            grad.b = tmp_b;
+        }
+        private void RmsProp()
+        {
+            for (featureId = 0; featureId < featuresLen; featureId++)
+            {
+                double old_sdw = model.b2 * grad.sdw[featureId] + (1 - model.b2) * _GetJW(true);
+                grad.sdw[featureId] = old_sdw;
+                double tmp_w = grad.w[featureId] - model.learning * _GetJW() / Math.Sqrt(grad.sdw[featureId]);
+                grad.w[featureId] = tmp_w;
+            }
+            double old_sdb= model.b2 * grad.sdb + (1 - model.b2) *_GetJ(true);
+            grad.sdb = old_sdb;
+            double tmp_b = grad.b - model.learning * _GetJ() / Math.Sqrt(grad.sdb);
+            grad.b = tmp_b;
+        }
+        private void Adam()
+        {
+            for (featureId = 0; featureId < featuresLen; featureId++)
+            {
+                double old_vdw = model.b1 * grad.vdw[featureId] + (1 - model.b1) * _GetJW();
+                double old_sdw = model.b2 * grad.sdw[featureId] + (1 - model.b2) * _GetJW(true);
+                grad.vdw[featureId] = old_vdw;
+                grad.sdw[featureId] = old_sdw;
+                double vdw_c = grad.vdw[featureId] / (1 - Math.Pow(model.b1, dataLen));
+                double sdw_c = grad.sdw[featureId] / (1 - Math.Pow(model.b2, dataLen));
+                double tmp_w = grad.w[featureId] - model.learning * vdw_c / (Math.Sqrt(sdw_c) + model.e);
+                grad.w[featureId] = tmp_w;
+            }
+            double old_vdb = model.b1 * grad.vdb + (1 - model.b1) * _GetJ();
+            double old_sdb = model.b2 * grad.sdb + (1 - model.b2) * _GetJ(true);
+            grad.vdb = old_vdb;
+            grad.sdb = old_sdb;
+            double vdb_c = grad.vdb / (1 - Math.Pow(model.b1, dataLen));
+            double sdb_c = grad.sdb / (1 - Math.Pow(model.b2, dataLen));
+            double tmp_b = grad.b - model.learning * vdb_c / (Math.Sqrt(sdb_c) + model.e);
+            grad.b = tmp_b;
+        }
+        public void Update()
+        {
+            switch(optimizer)
+            {
+                case Optimizer.Default:
+                    Default();
+                    break;
+                case Optimizer.Momentum:
+                    Momentum();
+                    break;
+                case Optimizer.RmsProp:
+                    RmsProp();
+                    break;
+                case Optimizer.Adam:
+                    Adam();
+                    break;
+            }
+        }
+        #endregion
+
+        #region Node Deltas
+        public void LayerDeltas(double[][] layerLossDerivs, double[][] respectTo)
+        {
+            double[][] pdersT = layerLossDerivs.Transposer();
+            double[] tmpCalcs = new double[pdersT.Length];
+            for (int i = 0; i < tmpCalcs.Length; i++)
+            {
+                double tmp = pdersT[i].Sum() / pdersT[i].Length;
+                double delta = tmp * activationDerivs[i];
+                deltas[i] = delta;
+                deltasPow[i] = Math.Pow(delta, 2);
+            }
+            _GetWDeltas(respectTo);
+            var x = 20;
+            //double[][] tmpCalcs = new double[layerLossDerivs.Length][];
+            //for (int arrId = 0; arrId < layerLossDerivs.Length; arrId++)
+            //{
+            //    double[] tmpDeltaCalcs = new double[layerLossDerivs[0].Length];
+            //    for (int i = 0; i < layerLossDerivs[arrId].Length; i++)
+            //    {
+            //        tmpDeltaCalcs[i] = layerLossDerivs[arrId][i] * activationDerivs[i];
+            //    }
+            //    tmpCalcs[arrId] = tmpDeltaCalcs;
+            //}
+
+            //double[][] tmpT = DA.Transposer(tmpCalcs);
+            //for(int i = 0; i < tmpT.Length; i++)
+            //{
+            //    double[] item = tmpT[i];
+            //    double res = item.Length > 1 ? item.Sum() / item.Length : item[0];
+            //    deltas[i] = res;
+            //    deltasPow[i] = Math.Pow(res, 2);
+            //}
+            //_GetWDeltas(respectTo);
+        }
+        public void Deltas(double[] lossDerivs, double[][] respectTo)
+        {
+            for (itemId = 0; itemId < dataLen; itemId++)
+            {
+                double lossDeriv = lossDerivs[itemId];
+                double actDeriv = activationDerivs[itemId];
+                deltas[itemId] = lossDeriv * actDeriv;
+                deltasPow[itemId] = Math.Pow(lossDeriv * actDeriv, 2);
+            }
+            _GetWDeltas(respectTo);
+        }
+        #endregion
+
+        #region Node Train and Predict
+        public PredResult Predict(double[] input)
+        {
+            PredResult prediction = new PredResult();
+            double[] featureCalcs = new double[featuresLen];
+            for (featureId = 0; featureId < featuresLen; featureId++)
+            {
+                featureCalcs[featureId] = grad.w[featureId] * input[featureId];
+            }
+
+            double pred = featureCalcs.Sum() + grad.b;
+
+            switch(actType)
+            {
+                case Activation.Default:
+                    prediction.activation = pred;
+                    prediction.actDeriv = 1;
+                    break;
+                case Activation.ReLU:
+                    prediction.activation = pred <= 0 ? 0 : pred;
+                    prediction.actDeriv = prediction.activation <= 0 ? 0 : 1;
+                    break;
+                case Activation.Tanh:
+                    prediction.activation = Math.Tanh(pred);
+                    prediction.actDeriv = 1 - Math.Pow(prediction.activation, 2);
+                    break;
+                case Activation.Sigmoid:
+                    prediction.activation = 1 / (1 + Math.Exp(-pred));
+                    prediction.actDeriv = prediction.activation * (1 - prediction.activation);
+                    break;
+                case Activation.SoftMax:
+                    prediction.activation = Math.Exp(-pred);
+                    prediction.actDeriv = -1;
+                    break;
+            }
+
+            return prediction;
+        }
+        public void Train(double[][] inputs)
+        {
+            if (!grad.isReady)
+                _BuildGrad(inputs);
+            for (itemId = 0; itemId < dataLen; itemId++)
+            {
+                PredResult pred = Predict(inputs[itemId]);
+                activations[itemId] = pred.activation;
+                activationDerivs[itemId] = pred.actDeriv;
+            }
+        }
+        #endregion
+    }
+}
+
+#endregion
 import random as r;
 import math;
 
