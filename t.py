@@ -1,3 +1,82 @@
+#region [Helpers]
+public static class Helpers2
+    {
+        public static double[][] GetInputs(this TestData[] data)
+        {
+            double[][] inputs = new double[data.Length][];
+            for (int i = 0; i < inputs.Length; i++)
+            {
+                inputs[i] = data[i].input;
+            }
+            return inputs;
+        }
+        public static double[] GetTargets(this TestData[] data)
+        {
+            double[] targets = new double[data.Length];
+            for (int i = 0; i < targets.Length; i++)
+            {
+                targets[i] = data[i].target;
+            }
+            return targets;
+        }
+        public static TestData[][] SplitToBatches(this Dictionary<int, TestData> data, int batchsize)
+        {
+            int cnt = 0;
+            int totalbatches = data.Count / batchsize;
+            TestData[][] batches = new TestData[totalbatches][];
+            for (int i = 0; i < data.Count; i+=batchsize)
+            {
+                if (cnt.Equals(totalbatches))
+                    break;
+                batches[cnt] = data.Skip(i).Take(batchsize).Select(x=> x.Value).ToArray();
+                cnt++;
+            }
+            return batches;
+        }
+        public static double LossCalc2(this double[] activations, double[] targets)
+        {
+            double[] calcs = new double[activations.Length];
+            for (int i = 0; i < calcs.Length; i++)
+            {
+                calcs[i] = Math.Pow(activations[i] - targets[i], 2);
+            }
+            return calcs.Sum() / (2 * calcs.Length);
+        }
+        public static double[] LossDeltas2(this double[] activations, double[] targets)
+        {
+            double[] calcs = new double[activations.Length];
+            for (int i = 0; i < calcs.Length; i++)
+            {
+                calcs[i] = 2 * (activations[i] - targets[i]);
+            }
+            return calcs;
+        }
+        public static double ComLossCalc(this double[][] activations, double[] targets)
+        {
+            double[] losses = new double[activations.Length];
+            for (int i = 0; i < losses.Length; i++)
+            {
+                losses[i] = Math.Pow(activations[i].Last() - targets[i], 2);
+            }
+            return losses.Sum() / (2 * losses.Length);
+        }
+        public static double[][] ComLossCalcDer(this double[][] activations, double[] targets)
+        {
+            double[][] actst = activations.Transposer();
+            double[][] losses = new double[actst.Length][];
+            for (int i = 0; i < losses.Length; i++)
+            {
+                double[] calcs = new double[actst[i].Length];
+                for (int j = 0; j < calcs.Length; j++)
+                {
+                    calcs[j] = 2 * (actst[i][j] - targets[j]);
+                }
+                losses[i] = calcs; 
+            }
+            return losses.Transposer();
+        }
+    }
+#endregion
 #region [Main]
 using System;
 using System.Collections.Generic;
