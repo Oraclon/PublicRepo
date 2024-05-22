@@ -1,3 +1,89 @@
+#region [Optimizers]
+public static class Helpers2
+{
+    public static double[] GetRmsValues(this double[] sdws, double[] vdws)
+    {
+        double[] calcs = new double[sdws.Length];
+        for (int i = 0; i < calcs.Length; i++)
+        {
+            calcs[i] = vdws[i] / Math.Sqrt(sdws[i]);
+        }
+        return calcs;
+    }
+}
+private void _BuildGrad(double[][] inputs)
+    {
+        dataLen     = inputs.Length;
+        featuresLen = inputs[0].Length;
+        ready       = true;
+    }
+
+    private double[] _CalculateOptimizerD(double[] vars, double[] optvars, bool pow = false)
+    {
+        double hyper = !pow ? model.b1 : model.b2;
+        double[] calcs = new double[dataLen];
+        
+        return calcs;
+    }
+    private double _ApplyLearningToDs(double[] vars)
+    {
+        double[] calcs = new double[vars.Length];
+        for (int i = 0; i < calcs.Length; i++)
+        {
+            calcs[i] = model.a * vars[i];
+        }
+        return calcs.Sum() / calcs.Length;
+    }
+    
+    private void _Default()
+    {
+        for (featureId = 0; featureId < featuresLen; featureId++)
+        {
+            grad.w[featureId] = grad.w[featureId] - _ApplyLearningToDs(wdeltas[featureId]);
+        }
+        grad.b = grad.b - _ApplyLearningToDs(deltas);
+    }
+    private void _Momentum()
+    {
+        for (featureId = 0; featureId < featuresLen; featureId++)
+        {
+            grad.vdw[featureId] = _CalculateOptimizerD(wdeltas[featureId], grad.vdw[featureId]);
+            grad.w[featureId] = grad.w[featureId] - _ApplyLearningToDs(grad.vdw[featureId]);
+        }
+
+        grad.vdb = _CalculateOptimizerD(deltas, grad.vdb);
+        grad.b = grad.b - _ApplyLearningToDs(grad.vdb);
+    }
+    private void _RmsProp()
+    {
+        for (featureId = 0; featureId < featuresLen; featureId++)
+        {
+            grad.sdw[featureId] = _CalculateOptimizerD(wdeltas[featureId], grad.sdw[featureId], true);
+            double[] dws = grad.sdw[featureId].GetRmsValues(wdeltas[featureId]);
+            grad.w[featureId] = grad.w[featureId] - _ApplyLearningToDs(dws);
+        }
+
+        grad.sdb = _CalculateOptimizerD(deltas, grad.sdb, true);
+        double[] dbs = grad.sdb.GetRmsValues(deltas);
+        grad.b = grad.b - _ApplyLearningToDs(dbs);
+    }
+
+    public void NodeUpdate()
+    {
+        switch (optimizer)
+        {
+            case Optimizer.Default:
+                _Default();
+                break;
+            case Optimizer.Momentum:
+                _Momentum();
+                break;
+            case Optimizer.RmsProp:
+                _RmsProp();
+                break;
+        }
+    }
+#endregion
 #region [Helpers]
 public static class Helpers2
     {
