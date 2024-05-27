@@ -1,4 +1,4 @@
-public static double[] ApplyPadding(this double[] pixels, int padding)
+public static double[] ApplyPadding(this double[] pixels, int padding = 1)
     {
         #region [Loop Controls]
         int key = 0;
