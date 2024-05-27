@@ -1,3 +1,44 @@
+public static int[] KernelById(this int id, int size, int dimention)
+    {
+        int[] positions = new int[(int)Math.Pow(size, 2)];
+        int key = 0;
+        int multiplier = 0;
+
+        for (int outter = 0; outter < size; outter++)
+        {
+            for (int i = 0; i < size; i++)
+            {
+                var pos = 0;
+                if (multiplier.Equals(0))
+                    pos = id + i;
+                else
+                    pos = id + dimention * multiplier + i;
+
+                positions[key] = pos;
+                key++;
+            }
+            multiplier++;
+        }
+        return positions;
+    }
+    public static double[] ApplyPooling(this double[] pixels, int poolsize = 2, PoolMethod method = PoolMethod.MaxPool)
+    {
+        #region [Loop Controls]
+        int key = 0;
+        #endregion
+        #region [Sizes]
+        int dimention = (int)Math.Sqrt(pixels.Length);
+        int new_size = (dimention - poolsize) + 1;
+        int loop_size = (int)Math.Pow(new_size, 2);
+        #endregion
+        #region [Apply Pooling]
+        for (int i = 0; i < loop_size; i++)
+        {
+            int[] kernel = i.KernelById(poolsize, dimention);
+        }
+        #endregion
+        return new double[2];
+    }
 public static double[] ApplyPadding(this double[] pixels, int padding = 1)
     {
         #region [Loop Controls]
