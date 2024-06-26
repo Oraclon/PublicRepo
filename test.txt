@@ -1,44 +1,69 @@
-#region [Data]
-        double[] red   = new double[]{1,0,0};
-        double[] green = new double[]{0,1,0};
-        double[] blue  = new double[]{0,0,1};
-        List<double[]> data = new List<double[]>();
+import math;
+
+class Datastruct:
+    def __init__(self):
+        self.featDim  : float = 0;
+        self.dataDim  : float = 0;
+        self.innerDim : float = 0;
+        self.dataItems: list[float] = [];
+        self.ready: bool = False;
+    def InsertKernel(self, kernel: list[float]) -> None:
+        if not self.ready:
+            arrDim: int = int(math.sqrt(len(kernel)));
+            self.featDim = arrDim;
+            self.dataDim = arrDim;
+            self.innerDim = arrDim * arrDim;
+            self.ready = True;
+        self.dataItems = kernel;
+    def RangeByIndex(self, indexPos: int) -> list[float]:
+        collection: list[float] = [];
+        for pos in range(self.featDim):
+            if(pos < self.featDim):
+                location: int = (indexPos * self.featDim) + pos;
+                collection.append(self.dataItems[location]);
+            else:
+                break;
+        return collection;
+
+def ApplyFilterOnPosition(pos: int, pixels: list[float], dts: Datastruct) -> (bool, bool, list[float]):
+    imDim = int(math.sqrt(len(pixels)));
+    breakStep: bool = False;
+    breakLoop: bool = False;
+    results: list[float] = [];
+    
+    for i in range(dts.featDim):
+        p: int = (i * imDim) + pos;
+        key: int = 0;
+        for j in range(p, p+dts.featDim,1):
+            calc: float = pixels[j] * dts.RangeByIndex(i)[key];
+            results.append(calc);
+            key += 1;
         
-        double[][] inputs = new double[][]{
-            new double[]{0.0000, 0.0000},
-            new double[]{0.2778, 0.2500},
-            new double[]{0.2778, 0.9375},
-            new double[]{0.9167, 0.6563},
-            new double[]{0.4167, 0.2500},
-            new double[]{0.3611, 0.3438},
-            new double[]{0.3333, 0.4063},
-            new double[]{0.9722, 0.3750},
-            new double[]{0.0833, 0.3438},
-            new double[]{0.6389, 0.3438},
-            new double[]{0.4167, 0.6875},
-            new double[]{0.7500, 0.6875},
-            new double[]{0.0833, 0.1875},
-            new double[]{0.9167, 0.5313},
-            new double[]{0.1389, 0.2500},
-            new double[]{0.8333, 0.6250},
-            new double[]{0.8056, 0.6250},
-            new double[]{0.1944, 1.0000},
-            new double[]{0.8333, 0.5625},
-            new double[]{0.4167, 1.0000},
-            new double[]{1.0000, 0.6875},
-            new double[]{0.4722, 0.6563},
-            new double[]{0.3611, 0.5625},
-            new double[]{0.4722, 0.8438},
-            new double[]{0.1667, 0.3125},
-            new double[]{0.4167, 0.9375},
-            new double[]{0.3611, 0.9688},
-            new double[]{0.9167, 0.3438},
-            new double[]{0.0833, 0.0313},
-            new double[]{0.3333, 0.8750}
-        };
-        double[][] targets = new double[][]{
-            red, red, blue, green, red, red, red, green, red, green, blue, green, red,
-            green, red, green, green, blue, green, blue, green, blue, blue, blue,
-            red, blue, blue, green, red, blue
-        };
-        #endregion
+            if (pos != 0) and ((j + 1) % imDim == 0):
+                breakStep = True;
+            if (pos != 0) and ((j + 1) == len(pixels)):
+                breakLoop = True;
+    return (breakStep, breakLoop, results);
+
+dts: Datastruct = Datastruct();
+dts.InsertKernel([1,1,1, 0,0,0, -1,-1,-1])
+
+array = [x for x in range(64)]
+imDim = int(math.sqrt(len(array)))
+collection: list[float] = [];
+multiplier: int = 1;
+position: int = -1;
+for i in range(len(array)):
+    position += 1;
+    breakStep, breakLoop, result = ApplyFilterOnPosition(position, array, dts);
+    collection.append(sum(result));
+
+    if breakLoop:
+        break;
+    if breakStep:
+        position = ((imDim * 1) * multiplier)-1;
+        multiplier += 1;
+        pass
+    
+    
+pass
