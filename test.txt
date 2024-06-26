@@ -2,6 +2,7 @@ import math;
 from PIL import Image;
 import matplotlib.pyplot as plt;
 import os;
+import random as rand;
 
 class Datastruct:
     def __init__(self):
@@ -35,6 +36,18 @@ def BlurImg(array: list[float], deviation: float) -> list[float]:
     ma = max(aa)
     return [(abs(x-mi) / ma)*255 for x in aa];
 
+def NoiseImg(array: list[float], deviation: float) -> list[float]:
+    noised: list[float] = [];
+    me = sum(array)/len(array);
+    for pixel in array:
+        randomNoise:float = rand.random() - 0.5;
+        first: float = 1 / (deviation * math.sqrt(2*math.pi));
+        noise = first * math.exp(-pow(randomNoise-me,2)/(2*pow(deviation,2)));
+        noised.append(pixel*noise);
+    mi = min(noised)
+    ma = max(noised)
+    return [(abs(x-mi) / ma)*255 for x in noised];
+
 def ApplyFilterOnPosition(pos: int, pixels: list[float], dts: Datastruct) -> (bool, bool, list[float]):
     imDim = int(math.sqrt(len(pixels)));
     breakStep: bool = False;
@@ -44,6 +57,8 @@ def ApplyFilterOnPosition(pos: int, pixels: list[float], dts: Datastruct) -> (bo
     for i in range(dts.featDim):
         p: int = (i * imDim) + pos;
         key: int = 0;
+        xx = dts.RangeByIndex(i)
+        pass
         for j in range(p, p+dts.featDim,1):
             calc: float = pixels[j] * dts.RangeByIndex(i)[key];
             results.append(calc);
@@ -77,22 +92,59 @@ def ApplyFilterOnPixels(pixels: list[float], dtc: Datastruct) -> list[float]:
     ma = max(relu);
     return [ (abs(x-mi)/ma)*255 for x in collection];
 
+kernels: list[list[float]]= [
+     (0,-.25,0, -.25,1,-.25, 0,-.25,0),
+    (-.125,-.125,-.125, -.125,1,-.125, -.125,-.125,-.125),
+    (.25,-.5,.25, -.5,1,-.5, .25,-.5,.25),
+    (0,-1,0, -1,4,-1, 0,-1,0),
+    (-1,0,0, 0,1,0, 0,0,0),         #2
+    (0,-2,0, 0,2,0, 0,0,0),         #3
+    (0,0,-1, 0,1,0, 0,0,0),         #4
+    (0,0,0, 0,2,-2, 0,0,0),         #5
+    (0,0,0, 0,1,0, 0,0,-1),         #6
+    (0,0,0, 0,2,0, 0,-2,0),         #7
+    (0,0,0, 0,1,0, -1,0,0),         #8
+    (1,-2,1, -2,4,-2, 1,-2,1),
+    (-1,0,1, -2,0,2, -1,0,1),
+    (0,1,2, -1,0,1, -2,-1,0),
+    (1,2,1, 0,0,0, -1,-2,-1),
+    (2,1,0, 1,0,-1, 0,-1,-2),
+    (1,0,-1, 2,0,-2, 1,0,-1),
+    (0,-1,-2, 1,0,-1, 2,1,0),
+    (-1,-2,-1, 0,0,0, 1,2,1),
+    (-2,-1,0, -1,0,1, 0,1,2),
+    (0,0,0, 1,0,-1, 0,0,0),
+    (0,0,1, 0,0,0, -1,0,0),
+    (0,0,0, -2,2,0, 0,0,0),
+]
 dts: Datastruct = Datastruct();
-dts.InsertKernel([1,0,-1, 1,0,-1, 1,0,-1])
 
-roots = "C:/Users/NAS/Desktop/dseeet/testSample/testSample"
-for root in os.listdir(roots):
-    tmp = f"{roots}/{root}"
+path = "C:/Users/NAS/Desktop/dseeet/testSample/testSample"
+roots = os.listdir(path)
+rand.shuffle(roots)
+for root in roots:
+    tmp = f"{path}/{root}"
     im = Image.open(tmp).convert("L");
-    im = im.resize((128,128))
+    im = im.resize((32 for _ in range(2)))
     imData = list(im.getdata())
-    data = ApplyFilterOnPixels(imData, dts);
-    size = int(math.sqrt(len(data)));
-    view1 = [imData[x: x+im.width] for x in [x for x in range(0, len(imData), im.height)]];
-    view2 = [data[x: x+size] for x in [x for x in range(0, len(data), size)]];
-    plt.subplot(1,2,1)
-    plt.imshow(view1)
-    plt.subplot(1,2,2)
-    plt.imshow(view2)
+    
+    tmp = [imData[x: x+im.width] for x in [x for x in range(0, len(imData), im.height)]];
+    plt.subplot(4,6,1);
+    plt.title("Original");
+    plt.imshow(tmp);
     plt.axis("off")
-    plt.show()
+
+    imData = BlurImg(imData, 100);
+    # imData = BlurImg(imData, 100);
+
+    for kid, kernel in enumerate(kernels):
+        dts.InsertKernel(kernel);
+        result = ApplyFilterOnPixels(imData, dts);
+        result = NoiseImg(result, 8.2);
+        size = int(math.sqrt(len(result)));
+        view = [result[x: x+size] for x in [x for x in range(0, len(result), size)]];
+        plt.subplot(4,6,kid+2)
+        plt.title(kid+1)
+        plt.imshow(view);
+        plt.axis("off")
+    plt.show();
