@@ -1,4 +1,7 @@
 import math;
+from PIL import Image;
+import matplotlib.pyplot as plt;
+import os;
 
 class Datastruct:
     def __init__(self):
@@ -25,6 +28,13 @@ class Datastruct:
                 break;
         return collection;
 
+def BlurImg(array: list[float], deviation: float) -> list[float]:
+    first = 1 / math.sqrt((2*math.pi) * pow(deviation,2));
+    aa = [first *  math.exp(-pow(x,2)/(2*pow(deviation,2))) for x in array];
+    mi = min(aa)
+    ma = max(aa)
+    return [(abs(x-mi) / ma)*255 for x in aa];
+
 def ApplyFilterOnPosition(pos: int, pixels: list[float], dts: Datastruct) -> (bool, bool, list[float]):
     imDim = int(math.sqrt(len(pixels)));
     breakStep: bool = False;
@@ -45,25 +55,44 @@ def ApplyFilterOnPosition(pos: int, pixels: list[float], dts: Datastruct) -> (bo
                 breakLoop = True;
     return (breakStep, breakLoop, results);
 
+def ApplyFilterOnPixels(pixels: list[float], dtc: Datastruct) -> list[float]:
+    imDim = int(math.sqrt(len(pixels)))
+    collection: list[float] = [];
+    multiplier: int = 1;
+    position: int = -1;
+    for i in range(len(pixels)):
+        position += 1;
+        breakStep, breakLoop, result = ApplyFilterOnPosition(position, pixels, dtc);
+        collection.append(sum(result));
+
+        if breakLoop:
+            break;
+        if breakStep:
+            position = ((imDim * 1) * multiplier)-1;
+            multiplier += 1;
+    
+    
+    relu = [x if x > 0 else 0 for x in collection]
+    mi = min(relu);
+    ma = max(relu);
+    return [ (abs(x-mi)/ma)*255 for x in collection];
+
 dts: Datastruct = Datastruct();
-dts.InsertKernel([1,1,1, 0,0,0, -1,-1,-1])
+dts.InsertKernel([1,0,-1, 1,0,-1, 1,0,-1])
 
-array = [x for x in range(64)]
-imDim = int(math.sqrt(len(array)))
-collection: list[float] = [];
-multiplier: int = 1;
-position: int = -1;
-for i in range(len(array)):
-    position += 1;
-    breakStep, breakLoop, result = ApplyFilterOnPosition(position, array, dts);
-    collection.append(sum(result));
-
-    if breakLoop:
-        break;
-    if breakStep:
-        position = ((imDim * 1) * multiplier)-1;
-        multiplier += 1;
-        pass
-    
-    
-pass
+roots = "C:/Users/NAS/Desktop/dseeet/testSample/testSample"
+for root in os.listdir(roots):
+    tmp = f"{roots}/{root}"
+    im = Image.open(tmp).convert("L");
+    im = im.resize((128,128))
+    imData = list(im.getdata())
+    data = ApplyFilterOnPixels(imData, dts);
+    size = int(math.sqrt(len(data)));
+    view1 = [imData[x: x+im.width] for x in [x for x in range(0, len(imData), im.height)]];
+    view2 = [data[x: x+size] for x in [x for x in range(0, len(data), size)]];
+    plt.subplot(1,2,1)
+    plt.imshow(view1)
+    plt.subplot(1,2,2)
+    plt.imshow(view2)
+    plt.axis("off")
+    plt.show()
