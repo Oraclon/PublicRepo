@@ -1,0 +1,138 @@
+import math;
+import random as r;
+
+class Pred:
+    def __init__(self):
+        self.p: float = 0;
+        self.a: float = 0;
+        self.d: float = 0;
+
+class Loss:
+    def __init__(self):
+        self.lo: float = 0;
+        self.de: float = 0;
+
+class Grad:
+    def __init__(self):
+        self.w: list[float] = [];
+        self.b: float = 0;
+        self.ready: bool = False;
+
+class Data:
+    def __init__(self, input: float):
+        self.input: list[float] = [input, -input];
+        self.target: float = 0 if input <= .5 else 1;
+
+class OptimizerVars:
+    def __init__(self):
+        self.ready: bool = False;
+        self.vdw : list[float] = [];
+        self.sdw : list[float] = [];
+        self.vdb : float = 0;
+        self.sdb : float = 0;
+        self.b1  : float = 0.9;
+        self.b2  : float = 0.999;
+        self.e   : float = math.pow(10, -8);
+
+def Predict(d: Data, g: Grad) -> Pred:
+    if not g.ready:
+        g.w = [r.random() for _ in range(len(d.input))];
+        g.ready = True;
+    
+    p: Pred = Pred();
+    p.p = sum([w*i for w,i in zip(g.w,d.input)]) + g.b;
+    p.a = 1 / (1 + math.exp(-p.p));
+    p.d = p.a * (1 - p.a);
+    return p;
+
+def LogLoss(p: Pred, d: Data) -> Loss:
+    l: Loss = Loss();
+    # l.lo = pow(p.a - d.target,2);
+    # l.de = 2*(p.a - d.target);
+    l.lo = -math.log(p.a) if d.target == 1 else -math.log(1-p.a);
+    l.de = -1/p.a if d.target == 1 else 1/(1-p.a);
+    return l;
+
+loss: float = 0;
+a: float = 0.001;
+o: OptimizerVars = OptimizerVars();
+g: Grad = Grad();
+data: list[Data] = [Data(r.random()) for _ in range(20000)];
+bSize: int = 64;
+batches = [data[x:x+bSize] for x in [x for x in range(0, len(data), bSize)]];
+
+epoch, bid = 0,0;
+keepTrain: bool = True;
+locker = math.pow(10, -20);
+old: float = 0;
+useOptimizer: bool = True;
+
+while(keepTrain):
+    epoch += 1;
+    for bid, batch in enumerate(batches):
+        preds   : list[Pred] = [Predict(d,g) for d in batch];
+        losses  : list[Loss] = [LogLoss(p,d) for p,d in zip(preds, batch)];
+        loss    : float = sum([x.lo for x in losses])/len(batch);
+        derivs  : list[float] = [x.de for x in losses];
+        
+        inputsT: list[list[float]] = list(zip(*[x.input for x in batch]));
+        for gid in range(len(inputsT)):
+            it: list[float] = inputsT[gid];
+            
+            wDelta: float = sum([(d*i)*a for d,i in zip(derivs, it)]);
+
+            if not o.ready and useOptimizer:
+                o.sdw = [0 for _ in range(len(inputsT))];
+                o.vdw = [0 for _ in range(len(inputsT))];
+                o.ready = True;
+            
+            if useOptimizer:
+                o.vdw[gid] = o.b1 * o.vdw[gid] + (1 - o.b1) * wDelta;
+                o.vdw[gid] = o.vdw[gid] / (1 + o.b1**epoch);
+                o.sdw[gid] = o.b2 * o.sdw[gid] + (1 - o.b2) * pow(wDelta,2);
+                o.sdw[gid] = o.sdw[gid] / (1 + o.b2**epoch);
+                g.w[gid] = g.w[gid] - (o.vdw[gid]/math.sqrt(o.sdw[gid]  + o.e));
+            else:
+                g.w[gid] = g.w[gid] - wDelta;
+        
+        delta: float = sum([d*a for d in derivs]);
+
+        if useOptimizer:
+            o.vdb = o.b1 * o.vdb + (1 - o.b1) * delta;
+            o.vdb = o.vdb / (1 + o.b1**epoch);
+            o.sdb = o.b2 * o.sdb + (1 - o.b2) * pow(delta, 2);
+            o.sdb = o.sdb / (1 + o.b2**epoch);
+            g.b = g.b - (o.vdb/math.sqrt(o.sdb + o.e));
+        else:
+            g.b = g.b - delta;
+
+        if(loss <= locker):
+            keepTrain = False;
+            break;
+        pass
+    if not old > loss:
+        print(epoch, loss, True)
+    else:
+        print(epoch, loss, False);
+    old = loss;
+
+c: int = 0;
+w: int = 0;
+for _ in range(100):
+    correct: int = 0;
+    wrong: int = 0; 
+    testData: list[Data] = [Data(r.random()) for _ in range(1000)];
+    for td in testData:
+        pred = Predict(td, g);
+        prediction: float = round(pred.a);
+        target = td.target;
+        if(prediction == target):
+            correct+=1;
+        else:
+            wrong +=1;
+    c += correct;
+    w += wrong;
+
+total = c+w;
+acc = round((c/total) * 100, 2);
+pass
