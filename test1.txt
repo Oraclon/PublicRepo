@@ -1,0 +1,516 @@
+using developmentTests.Helpers;
+using MLDev.LearningRateSchedules;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+
+public class DataStructure
+{
+    #region [Variables]
+    public int pos { get; set; }
+    public int dataDimention { get; set; }
+    public int featureDimention { get; set; }
+    public int innerDim { get; set; }
+    public bool ready { get; set; }
+    public double[] dataItems { get; set; }
+    public double[] cudaShared { get; set; }
+    #endregion
+}
+
+public static class MLModelHelpers
+{
+    public static void CheckLRScheduleVariables
+    (this MLModel model)
+    {
+        if (object.Equals(model.lrVars, null))
+            model.lrVars = new LRScheduleVariables();
+    }
+    public static void SetLearning
+    (this MLModel model, double learning)
+    {
+        model.CheckLRScheduleVariables();
+        model.lrVars.initialLearning = learning;
+    }
+
+    public static void SetDecayRate
+    (this MLModel model, double decayRate)
+    {
+        model.CheckLRScheduleVariables();
+        model.lrVars.decayRate = decayRate;
+    }
+
+    public static void SetEpochs
+    (this MLModel model, int epochs)
+    {
+        model.CheckLRScheduleVariables();
+        model.lrVars.decaySteps = epochs;
+        model.epochs = epochs;
+    }
+    public static void SetDecayPow
+    (this MLModel model, double pow)
+    {
+        model.CheckLRScheduleVariables();
+        model.lrVars.power = pow;
+    }
+}
+public class MLModel
+{
+    public int epochs                   { get; set; }
+    public int epoch                    { get; set; }
+    public double a = 0.4;
+    public double b1 = 0.9;
+    public iLearning learningSchedule   { get; set; }
+    public LRScheduleVariables lrVars   { get; set; }
+    public List<Convolution<double>> cnn { get; set; }
+}
+
+public static class SysHelpers
+{
+    public static double GetSum<T>(this List<T> items, bool isAvg = false)
+    {
+        int size = items.Count;
+        double res = 0;
+        Parallel.For(0, items.Count, i => {
+            res += Convert.ToDouble(items[i]);
+        });
+        return isAvg ? (res / size) : res;
+    }
+}
+public class Pixels
+{
+    public double[] pix;
+}
+public static class HelpersA
+{
+    public static double HandleRes
+    (this List<double> collection, CNNAction action, int kernelDim)
+    {
+        double res = 0;
+        switch (action)
+        {
+            case CNNAction.Kernel:
+                res = collection.GetSum() / kernelDim;
+                break;
+            case CNNAction.AvgPool:
+                res = collection.GetSum(true);
+                break;
+            case CNNAction.MaxPool:
+                res = collection.Max();
+                var x = 20;
+                break;
+        }
+        return res;
+    }
+    public static Convolution<double> CreateConvolutionStep
+    (this MLModel model, CNNAction action= CNNAction.Kernel, int stride = 1, int padding = 0)
+    {
+        if (object.Equals(model.cnn, null))
+            model.cnn = new List<Convolution<double>>();
+
+        Convolution<double> conv = new Convolution<double>()
+        {
+            stride  = stride,
+            padding = padding,
+            action  = action
+        };
+        model.cnn.Add(conv);
+        return conv;
+    }
+    public static void AddConvolutionStep<T>
+    (this Convolution<double> conv, T kernel)
+    {
+        if (kernel is double[])
+        {
+            double[] ker = kernel as double[];
+            Datastructure<double> dts = new Datastructure<double>();
+            dts.InsertKernel(ker);
+            conv.filters.Add(dts);
+        }
+        if (kernel is double[][])
+        {
+            double[][] ker = kernel as double[][];
+            for (int i = 0; i < ker.Length; i++)
+            {
+                Datastructure<double> dts = new Datastructure<double>();
+                dts.InsertKernel(ker[i]);
+                conv.filters.Add(dts);
+            }
+        }
+        
+    }
+   
+    public static Pixels ReadImg
+    (this string path)
+    {
+        using (StreamReader rd = new StreamReader(path))
+        {
+            Pixels pi = JsonConvert.DeserializeObject<Pixels>(rd.ReadToEnd());
+            return pi;
+        }
+    }
+    public static void SaveTmp
+    (this List<double[]> lst)
+    {
+        using (StreamWriter wt = new StreamWriter("C:/Users/NAS/Desktop/test.json"))
+        {
+            string elements = JsonConvert.SerializeObject(lst, Formatting.Indented);
+            wt.WriteLine(elements);
+        }
+    }
+    public static double[] CalculateFeatures
+    (this List<double[]> list)
+    {
+        double[] calculations = new double[list[0].Length];
+        Parallel.For(0, list[0].Length, feature=>
+        {
+            List<double> collection = new List<double>();
+            for (int i = 0; i < list.Count; i++)
+                collection.Add(list[i][feature]);
+            calculations[feature] = collection.Sum();
+        });
+        return calculations;
+    }
+    public static void AddPoolAndActivationStep
+    (this Convolution<double> conv, int stride = 2, int poolSize = 2, CNNAction poolAction = CNNAction.MaxPool)
+    {
+        if (object.Equals(conv.activation, null))
+            conv.activation = new Convolution<double>();
+
+        Convolution<double> cnv = new Convolution<double>()
+        {
+            stride = stride,
+            action = poolAction
+        };
+        Datastructure<double> dts = new Datastructure<double>();
+        double[] kernel = Enumerable.Range(0, (int)Math.Pow(poolSize, 2)).Select(x => Convert.ToDouble(1)).ToArray();
+        dts.InsertKernel(kernel);
+        cnv.filters.Add(dts);
+        conv.activation = cnv;
+
+        //model.cnn.Add(conv);
+    }
+}
+public class Convolution<T>
+{
+    public int padding  = 0;
+    public int stride   = 1;
+    public CNNAction action;
+    public List<Datastructure<T>> filters = new List<Datastructure<T>>();
+    public Convolution<T> activation;
+}
+public class GFG
+{
+    static void Main(string[] args)
+    {
+        MLModel model = new MLModel();
+
+        #region [Convolution Step 1]
+        Convolution<double> conv1 = model.CreateConvolutionStep();
+        conv1.AddConvolutionStep(Sobel.Full);
+        conv1.AddPoolAndActivationStep();
+        #endregion
+        #region [Convolution Step 2]
+        Convolution<double> conv2 = model.CreateConvolutionStep();
+        conv2.AddConvolutionStep(Kirsch.Full);
+        conv2.AddPoolAndActivationStep();
+        #endregion
+        #region [Convolution Step 3]
+        Convolution<double> conv3 = model.CreateConvolutionStep();
+        conv3.AddConvolutionStep(Test1.Full);
+        conv3.AddPoolAndActivationStep();
+        #endregion
+
+        string array = "C:/Users/NAS/Desktop/Scripts/Python/main.json";
+        Pixels pix = array.ReadImg();
+
+        double[] pixelsCollection = pix.pix;
+        Datastructure<double> pixels = new Datastructure<double>();
+        pixels.InsertCubeShapeData(pixelsCollection);
+        pixels.ApplyPixelScale();
+
+        List<double[]> tensorChannels = new List<double[]>();
+        for (int i = 0; i < model.cnn.Count; i++)
+        {
+            List<double[]> tmpTensor = new List<double[]>();
+            Convolution<double> convolution = model.cnn[i];
+            for (int j = 0; j < convolution.filters.Count; j++)
+            {
+                double[] result = pixels.ApplyFilterOnData(convolution, j);
+                tmpTensor.Add(result);
+            }
+
+            if (!object.Equals(convolution.activation, null))
+            {
+                for (int j = 0; j < tmpTensor.Count; j++)
+                {
+                    pixels.InsertCubeShapeData(tmpTensor[j]);
+                    pixels.ApplyRelu();
+                    tmpTensor[j] = pixels.ApplyFilterOnData(convolution.activation, 0);
+                }
+            }
+            tensorChannels = tmpTensor;
+            tensorChannels.Add(pixels.dataItems);
+            tensorChannels.SaveTmp();
+        }
+            
+
+        
+    }
+} 
+
+
+
+------------
+
+
+
+
+
+
+
+
+
+
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using DevExpress.Xpo;
+
+namespace developmentTests.Helpers
+{
+    public enum Rotation
+    {
+        Left,
+        Right
+    }
+    public enum CNNAction
+    {
+        Kernel,
+        MaxPool,
+        AvgPool
+    }
+    public class Datastructure<T>
+    {
+        public int dataSize;
+        public int dataDim;
+        public int featDim;
+        public T[] dataItems;
+        public bool ready = false;
+    }
+    public static class DatastructureHelpersLib
+    {
+        private static void GetDimentionsByCubeShape<T>
+        (this Datastructure<T> dts)
+        {
+            dts.dataDim = (int)Math.Sqrt(dts.dataItems.Length);
+            dts.featDim = (int)Math.Sqrt(dts.dataItems.Length);
+            dts.dataSize = dts.dataItems.Length;
+        }
+        
+        #region [Insert Actions]
+        public static void InsertCubeShapeData<T>
+        (this Datastructure<T> dts, T[] data)
+        {
+            dts.dataItems = data;
+            dts.GetDimentionsByCubeShape();
+            dts.ready = true;
+        }
+        public static void InsertKernel<T>
+        (this Datastructure<T> dts, T[] kernel)
+        {
+            if (!dts.ready)
+            {
+                dts.dataItems = kernel;
+                dts.ready = true;
+                dts.GetDimentionsByCubeShape();
+            }
+        }
+        public static void InsertNested<T>
+        (this Datastructure<T> dts, T[][] data)
+        {
+            if (!dts.ready)
+            {
+                dts.dataDim = data.Length;
+                dts.featDim = data[0].Length;
+                dts.dataSize = dts.dataDim * dts.featDim;
+                dts.dataItems = new T[dts.dataSize];
+                dts.ready = true;
+            }
+            int i, j, key = 0;
+            for (i = 0; i < dts.dataDim; i++)
+            {
+                for (j = 0; j < dts.featDim; j++)
+                {
+                    dts.dataItems[key] = data[i][j];
+                    key++;
+                }
+            }
+        }
+        #endregion
+
+        #region [Get Actions]
+        public static T[] ItemsByFeature<T>
+        (this Datastructure<T> dts, int featureId)
+        {
+            T[] collection = new T[dts.dataDim];
+            int i, key = 0;
+            for (i = 0; i < dts.dataDim; i++)
+            {
+                int location = (i * dts.featDim) + featureId;
+                collection[key] = dts.dataItems[location];
+                key++;
+            }
+            return collection;
+        }
+        public static T[] ItemsByIndex<T>
+        (this Datastructure<T> dts, int indexId)
+        {
+            T[] collection = new T[dts.featDim];
+            int i, key = 0;
+            int start = dts.dataDim * indexId;
+            int end = start + dts.featDim;
+            for (i = start; i < end; i++)
+            {
+                collection[key] = dts.dataItems[i];
+                key++;
+            }
+            return collection;
+        }
+        #endregion
+        
+        #region [Movement Actions]
+        public static void Rotate90Deg<T>
+        (this Datastructure<T> dts, Rotation rotation = Rotation.Right)
+        {
+            T[][] collection = new T[dts.dataDim][];
+            int i, j;
+
+            #region [Rotate Right]
+            if (rotation.Equals(Rotation.Right))
+            {
+                for (i = 0; i < dts.featDim; i++)
+                {
+                    int key = 0;
+                    T[] elements = dts.ItemsByFeature(i);
+                    T[] tmp = new T[dts.featDim];
+                    for (j = dts.featDim - 1; j >= 0; j--)
+                    {
+                        tmp[key] = elements[j];
+                        key++;
+                    }
+                    collection[i] = tmp;
+                }
+            }
+            #endregion
+
+            #region [Rotate Left] 
+            if (rotation.Equals(Rotation.Left))
+            {
+                int key = 0;
+                for (i = dts.featDim - 1; i >= 0; i--)
+                {
+                    collection[key] = dts.ItemsByFeature(i);
+                    key++;
+                }
+            }
+            #endregion
+            dts.InsertNested(collection);
+        }
+        #endregion
+
+        public static (bool, bool, List<double>) ApplyFilterToPosition <T>
+        (this Datastructure<T> dts, Datastructure<T> kernel, int indexPos)
+        {
+            List<double> calculations = new List<double>();
+            bool breakStep = false;
+            bool breakLoop = false;
+
+            bool oddEven = dts.dataSize % 2 == 0;
+            int kernelMult = kernel.featDim - 1;
+            int locker = indexPos + (kernelMult * dts.featDim) + kernel.featDim;
+
+            if (!indexPos.Equals(0) && (locker % dts.featDim).Equals(0))
+                breakStep = true;
+
+            if (!indexPos.Equals(0) && locker.Equals(dts.dataSize))
+                breakLoop = true;
+
+            for (int i = 0; i < kernel.featDim; i++)
+            {
+                int start = (i * dts.featDim) + indexPos;
+                int end = start + kernel.featDim;
+                int key = 0;
+                double[] kernelFeatures = kernel.ItemsByIndex(i) as double[];
+                for (int j = start; j < end; j++)
+                {
+                    double calculation = Convert.ToDouble(dts.dataItems[j]) * kernelFeatures[key];
+                    calculations.Add(calculation);
+                    key++;
+                }
+            }
+
+            //Parallel.For(0, kernel.featDim, index =>
+            //{
+            //    int start = (index * dts.featDim) + indexPos;
+            //    int end = start + kernel.featDim;
+            //    int key = 0;
+            //    double[] kernelFeatures = kernel.ItemsByIndex(index) as double[];
+            //    for (int i = start; i < end; i++)
+            //    {
+            //        double calculation = Convert.ToDouble(dts.dataItems[i]) * kernelFeatures[key];
+            //        calculations.Add(calculation);
+            //        key++;
+            //    }
+            //});
+
+            return (breakStep, breakLoop, calculations);
+        }
+        public static double[] ApplyFilterOnData<T>
+        (this Datastructure<T> dts, Convolution<T> conv, int kernelIdx)
+        {
+            Datastructure<T> kernel = conv.filters[kernelIdx];
+            List<double> collection = new List<double>();
+            int multiplier = 1;
+            int i;
+            for (i = 0; i < dts.dataSize; i+=conv.stride)
+            {
+                (bool, bool, List<double>) result = dts.ApplyFilterToPosition(kernel, i);
+                collection.Add(result.Item3.HandleRes(conv.action, kernel.featDim));
+
+                if (result.Item1)
+                {
+                    i = ((dts.featDim * conv.stride) * multiplier) - conv.stride;
+                    multiplier++;
+                }
+                if (result.Item2)
+                    break;
+            }
+            return collection.ToArray();
+        }
+        public static void ApplyRelu<T>
+        (this Datastructure<T> dts)
+        {
+            int i;
+            for (i = 0; i < dts.dataItems.Length; i++)
+                (dts.dataItems as double[])[i] = (dts.dataItems as double[])[i] > 0 ? (dts.dataItems as double[])[i] : 0;
+        }
+        public static void ApplyPixelScale<T>
+        (this Datastructure<T> dts)
+        {
+            double[] collection = dts.dataItems as double[];
+            double min = collection.Min();
+            double max = collection.Max();
+
+            int i;
+            for (i = 0; i < dts.dataItems.Length; i++)
+                (dts.dataItems as double[])[i] = ((dts.dataItems as double[])[i] - min) / (max - min);
+        }
+    }
+}
