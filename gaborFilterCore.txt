@@ -1,0 +1,22 @@
+% Set parameters
+sigma = 2;  % Standard deviation
+gamma = 1;  % Aspect ratio (ellipticity)
+theta = 0;  % Orientation (in degrees)
+lambda = 4;  % Wavelength (adjust as needed)
+psi = 0;  % Phase offset (adjust as needed)
+
+% Calculate kernel size
+kernel_size = 5;  % 5x5 kernel
+
+% Compute the Gabor filter
+[x, y] = meshgrid(-floor(kernel_size/2):floor(kernel_size/2));
+gabor_kernel = exp(-(x.^2 + y.^2) / (2 * sigma^2)) .* cos(2 * pi * x / lambda + theta) + psi;
+
+% Normalize the kernel (optional)
+gabor_kernel = gabor_kernel / sum(abs(gabor_kernel(:)));
+
+% Display the kernel (optional)
+imshow(gabor_kernel, []);
+
+% Apply the kernel to an image using convolution
+filtered_image = conv2(input_image, gabor_kernel, 'same');
