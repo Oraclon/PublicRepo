@@ -40,3 +40,29 @@ plt.imshow(gabor_filter, cmap='gray')
 plt.title(f"Gabor Filter (Frequency = {frequency})")
 plt.axis('off')
 plt.show()
+
+
+ksize = 21
+frequency = 0.2
+theta = 11
+sigma = 1.0
+gamma = 0.05
+pi = np.pi;
+gabor_filter = generate_gabor_filter(ksize, frequency, theta, sigma, gamma)
+
+rads = [ 0, pi / 6, 2* pi /6, 3 * pi /6 , 4 * pi / 6, 5 * pi / 6 ];
+freqs = [.1, 0.2, 0.4, 0.5, 0.6, 0.7];
+gammas = [.5,.4,.3,.2,.1,.05]
+collection = [];
+
+for freq in freqs:
+    for rad in rads:
+        for gam in gammas:
+            collection.append(generate_gabor_filter(ksize, freq, rad, sigma, gam));
+pass
+
+for vid, view in enumerate(collection):
+    plt.subplot(6,36,vid+1)
+    plt.imshow(view)
+    plt.axis("off")
+plt.show();
