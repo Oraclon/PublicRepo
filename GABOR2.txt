@@ -1,0 +1,42 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+def generate_gabor_filter(ksize, frequency, theta, sigma, gamma):
+    """
+    Generates a Gabor filter kernel.
+
+    Args:
+        ksize (int): Kernel size (odd number).
+        frequency (float): Frequency of the Gabor filter.
+        theta (float): Orientation of the Gabor filter (in radians).
+        sigma (float): Gaussian envelope spread.
+        gamma (float): Aspect ratio (elongation).
+
+    Returns:
+        np.ndarray: Gabor filter kernel.
+    """
+    half_size = ksize // 2
+    x, y = np.meshgrid(np.arange(-half_size, half_size + 1), np.arange(-half_size, half_size + 1))
+
+    x_prime = x * np.cos(theta) + y * np.sin(theta)
+    y_prime = -x * np.sin(theta) + y * np.cos(theta)
+
+    gabor_kernel = np.exp(-(x_prime ** 2 + gamma ** 2 * y_prime ** 2) / (2 * sigma ** 2)) * np.cos(2 * np.pi * frequency * x_prime)
+
+    return gabor_kernel
+
+# Define Gabor filter parameters
+ksize = 5
+frequency = 0.2
+theta = np.pi / 4
+sigma = 3.0
+gamma = 0.5
+
+# Generate the Gabor filter
+gabor_filter = generate_gabor_filter(ksize, frequency, theta, sigma, gamma)
+
+# Display the Gabor filter
+plt.imshow(gabor_filter, cmap='gray')
+plt.title(f"Gabor Filter (Frequency = {frequency})")
+plt.axis('off')
+plt.show()
