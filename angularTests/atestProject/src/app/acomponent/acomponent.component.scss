@@ -1,29 +1,17 @@
-html,body
+button
 {
-    /* width */
-    ::-webkit-scrollbar {
-    width: 10px;
-    }
-
-    /* Track */
-    ::-webkit-scrollbar-track {
-    background: #f1f1f1; 
-    }
-    
-    /* Handle */
-    ::-webkit-scrollbar-thumb {
-    background: #888; 
-    }
-
-    /* Handle on hover */
-    ::-webkit-scrollbar-thumb:hover {
-    background: #555; 
-    }
+    width: 100%;
+    cursor: pointer;
+    border: none;
+    padding: .6rem;
+    border-radius: .6rem;
+    background: rgb(248, 44, 44);
+    color: white;
 }
 .container
 {
     width: 300px; height: 400px;
-    background: blue;
+    background: rgba(15,15,15);
     padding: .4rem;
     display: grid;
     grid-template-rows: min-content auto min-content;
@@ -31,15 +19,18 @@ html,body
     gap: .6rem;
     align-content: start;
     overflow-y: auto;
+    border-radius: .6rem;
 
     & > div { border-radius: .6rem; }
 
     & > .itemsValue
     {
         grid-row: 1;
-        background: orange;
-        padding: .4rem;
+        background: rgb(21,21,21);
+        padding: .8rem;
         font-weight: 700;
+        color: white;
+        border-bottom: 1px solid orange;
     }
     & > .itemsContainer
     {
@@ -53,25 +44,19 @@ html,body
         & > .item
         {
             padding: .6rem;
-            background: green;
+            background: rgb(21,21,21);
             color: white;
             cursor: pointer;
             border-radius: .6rem;
         }
         &> .item.active
         {
-            background: yellow;
+            background: orange;
             color: black;
         }
     }
     & > .buttonsContainer
     {
-        grid-row: 3;
-
-        & > button
-        {
-            width: 100%;
-            cursor: pointer;
-        }
+        grid-row: 3; 
     }
 }

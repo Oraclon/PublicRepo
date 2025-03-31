@@ -1,0 +1,11 @@
+<div class="container">
+  <div class="itemsValue">{{  selectionsBlock.value == null ? 'Empty': selectionsBlock.value }}</div>
+  <div class="itemsContainer">
+    <div [ngClass]="[item.selected ? 'item active':'item']" *ngFor="let item of selectionsBlock.data" (click)="changeSelection(item)">
+      {{  item.description }}
+    </div>
+  </div>
+  <div class="buttonsContainer">
+    <button type="button" (click)="clearSelections()">Clear All</button>
+  </div>
+</div>
