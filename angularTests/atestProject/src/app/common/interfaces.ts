@@ -27,6 +27,7 @@ export class SelectionItem implements iSelection
 export class SelectionItemsBlock
 {
     data: SelectionItem[] = [];
+    selections: SelectionItem[] = [];
 
     constructor(data: iSelection[])
     {
@@ -36,9 +37,28 @@ export class SelectionItemsBlock
         this.data = generated;
     }
 
+    addToSelections(item: SelectionItem):void
+    {
+        item.changeStatus();
+        item.selected ? this.selections.push(item) : this._removeFromSelections(item);
+    }
+
     clearSelections():void
     {
-        this.data.map((x:SelectionItem)=> {x.selected = false; return x;})
+        this.data.map((x:SelectionItem)=> {x.selected = false; return x;});
+        this.selections = [];
+    }
+
+    private _removeFromSelections(item: SelectionItem): void
+    {
+        let knownIndex: number = 0;
+        for(let x: number = 0; x < this.selections.length; x++)
+            if(this.selections[x].value == item.value)
+            {
+                knownIndex = x;
+                break;
+            }
+        this.selections.splice(knownIndex, 1);
     }
 
     set value (value: string | null)
@@ -48,12 +68,14 @@ export class SelectionItemsBlock
             let container = value.split("-");
             for(let x: number = 0; x < this.data.length; x++)
                 if(container.includes(this.data[x].value))
-                    this.data[x].selected = true;            
+                {
+                    this.data[x].selected = true;
+                    this.selections.push(this.data[x]);
+                }            
         }
     }
     get value(): string | null
     {
-        let selection: SelectionItem[] = this.data.filter((x:SelectionItem)=> x.selected);
-        return selection.length > 0 ? selection.map((x:SelectionItem)=> x.value).join(",") : null;
+       return this.selections.length == 0 ? null : this.selections.map(x=> x.value).join(","); 
     }
 }

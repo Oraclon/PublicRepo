@@ -13,22 +13,15 @@ export class AppComponent implements OnInit{
   selectionsBlock: SelectionItemsBlock = new SelectionItemsBlock(this.items);
 
   ngOnInit(): void {
-    this.selectionsBlock.value = "0-3-4-6-12";
-  }
-
-  private _updateValue():void
-  {
-    console.log(this.selectionsBlock.value);
+    this.selectionsBlock.value = "0-3-2-4-6";
   }
 
   changeSelection(item:SelectionItem):void
   {
-    item.changeStatus();
-    this._updateValue();
+    this.selectionsBlock.addToSelections(item); 
   }
   clearSelections():void
   {
     this.selectionsBlock.clearSelections();
-    this._updateValue();
   }
 }
