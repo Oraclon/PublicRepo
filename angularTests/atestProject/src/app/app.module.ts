@@ -13,6 +13,9 @@ import { SendSarrayComponent } from './signalArr/send-sarray/send-sarray.compone
 import { ReceiveSarrayComponent } from './signalArr/receive-sarray/receive-sarray.component';
 import { ViewUpdateComponent } from './signalView/view-update/view-update.component';
 import { ViewControlComponent } from './signalView/view-control/view-control.component';
+import { SignalHttpComponent } from './signalHttp/signal-http/signal-http.component';
+import { SignalHttpViewComponent } from './signalHttp/signal-http-view/signal-http-view.component';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -25,11 +28,14 @@ import { ViewControlComponent } from './signalView/view-control/view-control.com
     SendSarrayComponent,
     ReceiveSarrayComponent,
     ViewUpdateComponent,
-    ViewControlComponent
+    ViewControlComponent,
+    SignalHttpComponent,
+    SignalHttpViewComponent
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpClientModule
   ],
   providers: [MainService],
   bootstrap: [AppComponent]
