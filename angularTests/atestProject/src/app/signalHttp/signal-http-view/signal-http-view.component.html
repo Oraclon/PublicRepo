@@ -1,3 +1,9 @@
 <div>
-    {{ totals() }}
+    <div>
+        {{ totals() }}
+    </div>
+    <div style="margin-top: 20px;">
+        <div *ngFor="let item of items()" style="cursor:pointer" (click)="anAction(item)">{{item.path}}</div>
+    </div>
+    <!---->
 </div>

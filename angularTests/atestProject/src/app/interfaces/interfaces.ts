@@ -16,3 +16,14 @@ export interface TestPost
     title: string;
     path: string;
 }
+export class TestPostClass implements TestPost
+{
+    id!: number;
+    title!:string;
+    path!:string;
+
+    public doSomething():void
+    {
+        this.path = "dd";
+    }
+}

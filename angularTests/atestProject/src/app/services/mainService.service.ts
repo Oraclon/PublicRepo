@@ -1,5 +1,5 @@
 import { Injectable, signal } from "@angular/core";
-import { iTestInterface, TestPost, TestUser } from "../interfaces/interfaces";
+import { iTestInterface, TestPost, TestPostClass, TestUser } from "../interfaces/interfaces";
 import { ViewType } from "../signalView/view-update/view-update.component";
 
 @Injectable()
@@ -10,7 +10,7 @@ export class MainService
     private test: string[] = ["a","B"]
     public arraySignal = signal<string[]>([]);
     public viewSignal = signal<ViewType>(ViewType.None);
-    public httpSignal = signal<TestPost[]>([]);
+    public httpSignal = signal<TestPostClass[]>([]);
 
     interval = setInterval(()=>{
         this.arraySignal.set(this.test);

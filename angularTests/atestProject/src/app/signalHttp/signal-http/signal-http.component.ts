@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
-import { TestPost } from '../../interfaces/interfaces';
+import { TestPost, TestPostClass } from '../../interfaces/interfaces';
 import { MainService } from '../../services/mainService.service';
 
 @Component({
@@ -13,7 +13,7 @@ export class SignalHttpComponent {
   constructor(private http: HttpClient, private ms: MainService){}
   getUserData():void
   {
-    this.http.get<TestPost[]>("https://my-json-server.typicode.com/JSGund/XHR-Fetch-Request-JavaScript/posts",{})
-    .subscribe((response: TestPost[])=>{ this.ms.httpSignal.set(response); console.log(response)})
+    this.http.get<TestPostClass[]>("https://my-json-server.typicode.com/JSGund/XHR-Fetch-Request-JavaScript/posts",{})
+    .subscribe((response: TestPostClass[])=>{ this.ms.httpSignal.set(response); console.log(response)})
   }  
 }
