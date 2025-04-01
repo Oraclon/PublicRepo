@@ -1,4 +1,4 @@
-<div> {{ arraySize() }} </div>
+<div> Array Length : <strong>{{ arraySize() }}</strong></div>
 <div style="display: flex; flex-direction: column;">
 <input #inputValue (keydown)="updateInputValue(inputValue)" type="text" />
 <button (click)="sendToArray(inputValue)">Add To Array</button>
