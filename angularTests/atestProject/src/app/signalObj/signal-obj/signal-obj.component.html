@@ -1,0 +1,12 @@
+<div>
+    <div>Send Id: <strong>{{ value().id }} </strong></div>
+    <div>Send Value: <strong>{{ (value().value == null || value().value == "") ? "Empty" : value().value }} </strong></div>
+</div>
+<div style="display: flex; gap: .6rem; flex-direction: column;">
+    <input type="text" #testInput (keydown)="getInputValue(testInput)">
+    <div style="display: flex; gap: .6rem;">
+        <button (click)="increaseId()">Increase</button>
+        <button (click)="resetId()">Reset Id</button>
+        <button (click)="clearText()">Clear Text</button>
+    </div>
+</div>

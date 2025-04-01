@@ -1,0 +1,6 @@
+<div>
+    <div *ngIf="view() == viewType.None">No View Active</div>
+    <div *ngIf="view() == viewType.View1" style="background: red; color: white; padding: 1rem;">View 1 Active</div>
+    <div *ngIf="view() == viewType.View2" style="background: green;  color: white; padding: 1rem;">View 2 Active</div>
+    <div *ngIf="view() == viewType.View3" style="background: brown;  color: white; padding: 1rem;">View 3 Active</div>
+</div>

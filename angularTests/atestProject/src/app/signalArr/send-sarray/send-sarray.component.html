@@ -1,0 +1,6 @@
+<div> {{ arraySize() }} </div>
+<div style="display: flex; flex-direction: column;">
+<input #inputValue (keydown)="updateInputValue(inputValue)" type="text" />
+<button (click)="sendToArray(inputValue)">Add To Array</button>
+<button (click)="clearArray()">Clear array</button>
+</div>
