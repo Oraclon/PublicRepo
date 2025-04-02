@@ -1,6 +1,8 @@
-<div> Array Length : <strong>{{ arraySize() }}</strong></div>
-<div style="display: flex; flex-direction: column;">
+<div style="margin-bottom: .6rem"> Array Length : <strong>{{ arraySize() }}</strong></div>
+<div style="display: flex; flex-direction: column; gap: var(--padGap);">
 <input #inputValue (keydown)="updateInputValue(inputValue)" type="text" />
+<div style="display: flex; gap: var(--padGap)">
 <button (click)="sendToArray(inputValue)">Add To Array</button>
 <button (click)="clearArray()">Clear array</button>
+</div>
 </div>

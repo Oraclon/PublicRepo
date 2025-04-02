@@ -16,6 +16,9 @@ import { ViewControlComponent } from './signalView/view-control/view-control.com
 import { SignalHttpComponent } from './signalHttp/signal-http/signal-http.component';
 import { SignalHttpViewComponent } from './signalHttp/signal-http-view/signal-http-view.component';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { MainMenuComponent } from './plugins/main-menu/main-menu.component';
+import { DemohomeComponent } from './pages/demohome/demohome.component';
+import { SignalsComponent } from './pages/signals/signals.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +33,10 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
     ViewUpdateComponent,
     ViewControlComponent,
     SignalHttpComponent,
-    SignalHttpViewComponent
+    SignalHttpViewComponent,
+    MainMenuComponent,
+    DemohomeComponent,
+    SignalsComponent
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,52 @@
+.flexContainer
+{
+    width: 100%; height: 100%;
+    display: flex;
+    
+    &.centeredAll
+    {
+        align-items: center;
+        justify-content: center;
+    }
+    &.centeredStart
+    {
+        align-items: start;
+        justify-content: center;
+    }
+}
+
+.gridHolder
+{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(1, 1fr);
+    gap: var(--padGap);
+    padding: var(--padGap);
+}
+.card
+{
+    display: grid;
+    grid-template-rows: min-content auto;
+    grid-template-columns: repeat(1, 1fr);
+    gap: var(--padGap);
+    background: var(--color);
+    border-radius: var(--padGap);
+    padding: var(--padGap);
+
+    & > .title
+    {
+        grid-row: 1;
+        color: var(--container);
+        font-weight: 700;
+        text-align: center;
+    }
+    & > .body
+    {
+        grid-row: 2;
+        display: flex;
+        gap: calc(var(--padGap) * 2);
+        color: var(--background);
+        align-items: center;
+       
+    }
+}

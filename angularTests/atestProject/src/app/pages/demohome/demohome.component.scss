@@ -1,0 +1,27 @@
+.card
+{
+    width: 200px; height: 200px;
+    border-radius: 1.2rem;
+    background: var(--color);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.cardsContainer
+{
+    width: 100%; height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+
+   & > .cardsHolder
+   {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    background: var(--container);
+    padding: var(--padGap);
+    gap: var(--padGap);
+    border-radius: .6rem;
+   }
+}

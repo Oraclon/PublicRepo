@@ -1,9 +1,14 @@
-<div>
+<div style="display: grid; gap: var(--padGap);">
     <div>
         {{ totals() }}
     </div>
-    <div style="margin-top: 20px;">
-        <div *ngFor="let item of items()" style="cursor:pointer" (click)="anAction(item)">{{item.path}}</div>
+    <div style="display: grid; gap: var(--padGap); font-size: .6em;">
+        <div 
+            *ngFor="let item of items()" 
+            style="cursor:pointer" 
+            (click)="anAction(item)">
+                - {{item.title}}
+        </div>
     </div>
     <!---->
 </div>

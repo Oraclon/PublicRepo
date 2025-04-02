@@ -1,6 +1,6 @@
-<div>
+<div style="display: flex; align-items: center; justify-content: center; max-width: 200px;">
     <div *ngIf="view() == viewType.None">No View Active</div>
-    <div *ngIf="view() == viewType.View1" style="background: red; color: white; padding: 1rem;">View 1 Active</div>
-    <div *ngIf="view() == viewType.View2" style="background: green;  color: white; padding: 1rem;">View 2 Active</div>
-    <div *ngIf="view() == viewType.View3" style="background: brown;  color: white; padding: 1rem;">View 3 Active</div>
+    <div *ngIf="view() == viewType.View1" style="background: red; color: white; padding: 1rem; border-radius: .6rem;">View 1 Active</div>
+    <div *ngIf="view() == viewType.View2" style="background: green;  color: white; padding: 1rem; border-radius: .6rem;">View 2 Active</div>
+    <div *ngIf="view() == viewType.View3" style="background: brown;  color: white; padding: 1rem; border-radius: .6rem;">View 3 Active</div>
 </div>

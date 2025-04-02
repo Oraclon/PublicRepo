@@ -1,8 +1,18 @@
+:root
+{
+    --background: #27445D;
+    --container: #497D74;
+    --color: #EFE9D5;
+    --tone: #71BBB2;
+    --padGap: .6rem;
+}
 html,body
 {
     font-family: "Play", sans-serif;
     width: 100%; height: 100%;
     margin: 0; padding: 0;
+    background: var(--background);
+    color: var(--color);
 
     /* width */
     ::-webkit-scrollbar {
@@ -23,4 +33,33 @@ html,body
     ::-webkit-scrollbar-thumb:hover {
     background: #555; 
     }
+}
+
+input, button
+{
+    border: none;
+    outline: none;
+    padding: var(--padGap);
+    border-radius: var(--padGap);
+
+    &:focus
+    {
+        border: none;
+        outline: none;
+    }
+}
+button
+{
+    background: var(--container);
+    color: var(--color);
+    font-weight: 700;
+    cursor: pointer;
+}
+.listItem
+{
+    line-height: 1;
+    background: var(--container);
+    color: var(--color);
+    padding: var(--padGap);
+    border-radius: var(--padGap);
 }

@@ -1,5 +1,6 @@
-import { Component, computed, OnInit, Signal } from '@angular/core';
+import { AfterViewInit, Component, computed, OnInit, Signal } from '@angular/core';
 import { MainService } from '../../services/mainService.service';
+import { interval, Observable, take } from 'rxjs';
 
 @Component({
   selector: 'app-signal-read',

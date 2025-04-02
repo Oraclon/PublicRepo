@@ -16,6 +16,6 @@ export class SignalHttpViewComponent {
 
   anAction(item: TestPostClass)
   {
-    item.path = "Empty";
+    item.title = "Empty";
   }
 }
