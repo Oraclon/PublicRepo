@@ -16,6 +16,9 @@ export class SignalHttpViewComponent {
 
   anAction(item: TestPostClass)
   {
-    item.title = "Empty";
+    if(item.back == null)
+      item.back = item.title;
+
+    item.title = item.title == "" ? item.back : "";
   }
 }

@@ -21,6 +21,7 @@ export class TestPostClass implements TestPost
     id!: number;
     title!:string;
     path!:string;
+    back:string | null = null;
 
     public doSomething():void
     {
