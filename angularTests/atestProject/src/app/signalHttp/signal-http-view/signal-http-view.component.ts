@@ -11,7 +11,7 @@ import { TestPostClass } from '../../interfaces/interfaces';
 export class SignalHttpViewComponent {
   constructor(private ms: MainService){}
 
-  totals:Signal<number> = computed(()=>{ return this.ms.httpSignal().length; });
+  
   items:Signal<TestPostClass[]> = computed(()=>{ return this.ms.httpSignal(); });
 
   anAction(item: TestPostClass)

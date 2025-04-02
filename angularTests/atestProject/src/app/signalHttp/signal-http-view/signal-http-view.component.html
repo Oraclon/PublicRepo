@@ -1,7 +1,4 @@
 <div style="display: grid; gap: var(--padGap);">
-    <div>
-        {{ totals() }}
-    </div>
     <div style="display: grid; gap: var(--padGap); font-size: .6em;">
         <div 
             *ngFor="let item of items()" 
@@ -10,5 +7,4 @@
                 - {{item.title}}
         </div>
     </div>
-    <!---->
 </div>

@@ -11,6 +11,7 @@ import { MainService } from '../../services/mainService.service';
 })
 export class SignalHttpComponent {
   constructor(private http: HttpClient, private ms: MainService){}
+  totals:Signal<number> = computed(()=>{ return this.ms.httpSignal().length; });
   intervalCounter: Signal<number> = computed(()=>{
     return this.ms.intervalSignal();
   })
