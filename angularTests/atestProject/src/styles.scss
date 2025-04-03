@@ -5,7 +5,14 @@
     --color: #EFE9D5;
     --tone: #71BBB2;
     --padGap: .6rem;
+    --gridRows: repeat(2, auto);
+
+    @media only screen and (max-width: 600px)
+    {
+        --gridRows: repeat(1, 1fr);
+    }
 }
+
 html,body
 {
     font-family: "Play", sans-serif;
@@ -54,6 +61,43 @@ button
     color: var(--color);
     font-weight: 700;
     cursor: pointer;
+}
+fieldset
+{
+    display: grid;
+    align-content: start;
+    grid-template-columns: repeat(2, auto);
+    grid-template-rows: repeat(1, 1fr);
+    border: none;
+}
+form
+{
+    display: grid;
+    grid-template-rows: min-content auto min-content;
+    grid-template-columns: repeat(1, 1fr);
+    gap: var(--padGap);
+    padding: var(--padGap);
+
+    & > .head
+    {
+        grid-row: 1;
+    }
+    & > .body
+    {
+        grid-row: 2;
+        height: 100%;
+        overflow: hidden;
+    }
+    & > .body.scroll
+    {
+        grid-row: 2;
+        height: 100%;
+        overflow-y: auto;
+    }
+    & > .footer
+    {
+        grid-row: 3;
+    }
 }
 .listItem
 {

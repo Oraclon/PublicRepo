@@ -19,6 +19,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { MainMenuComponent } from './plugins/main-menu/main-menu.component';
 import { DemohomeComponent } from './pages/demohome/demohome.component';
 import { SignalsComponent } from './pages/signals/signals.component';
+import { FormComponent } from './pages/form/form.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +37,8 @@ import { SignalsComponent } from './pages/signals/signals.component';
     SignalHttpViewComponent,
     MainMenuComponent,
     DemohomeComponent,
-    SignalsComponent
+    SignalsComponent,
+    FormComponent
   ],
   imports: [
     BrowserModule,
