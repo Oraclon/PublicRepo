@@ -1,7 +1,11 @@
-<div class="menuContainer">
-    <div class="menuItem" routerLink="/home">Home</div>
-    <div class="menuItem" routerLink="/signals">Signals</div>
-    <div class="menuItem" routerLink="/form" *ngIf="logged()">Form</div>
-    <div [ngClass]="[logged() ? 'menuItem success':'menuItem danger']" routerLink="/bel">Protect</div>
-    <div [ngClass]="[logged() ? 'menuItem danger': 'menuItem']" (click)="loginLogoutAction()">{{ logged() ? "Logout" : "Login" }}</div>
+<div class="menuBlock">
+    <div class="menuContainer">
+        <div class="menuItem" routerLink="/home">Home</div>
+        <div class="menuItem" routerLink="/signals">Signals</div>
+        <div class="menuItem" routerLink="/form" *ngIf="logged()">Form</div>
+        <div [ngClass]="[logged() ? 'menuItem success':'menuItem danger']" routerLink="/bel">Protect</div>
+    </div>
+    <div class="menuContainer">
+        <div [ngClass]="[logged() ? 'menuItem danger': 'menuItem']" (click)="loginLogoutAction()">{{ logged() ? "Logout" : "Login" }}</div>
+    </div>
 </div>
