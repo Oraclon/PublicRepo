@@ -2,4 +2,5 @@
     <div style="text-align: center; margin-bottom: 10px;" *ngIf="isLogged()">Items: {{totals()}}</div>
     <div style="display: grid; gap: .4rem;">
     <button [disabled]="!isLogged()" (click)="getUserData()" style="font-size: .6em; width: 100px;">Get Data</button>
+    <button  *ngIf="isLogged()" (click)="clearData()" style="font-size: .6em; width: 100px;">Clear Data</button>
 </div></div>
