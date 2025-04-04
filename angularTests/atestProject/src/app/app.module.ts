@@ -22,6 +22,8 @@ import { SignalsComponent } from './pages/signals/signals.component';
 import { FormComponent } from './pages/form/form.component';
 import { LoggedInComponent } from './logged-in/logged-in.component';
 import { SessionService } from './services/sessionService.service';
+import { NotAuthorizedComponent } from './popups/not-authorized/not-authorized.component';
+import { ReqService } from './services/requests.service';
 
 @NgModule({
   declarations: [
@@ -41,14 +43,15 @@ import { SessionService } from './services/sessionService.service';
     DemohomeComponent,
     SignalsComponent,
     FormComponent,
-    LoggedInComponent
+    LoggedInComponent,
+    NotAuthorizedComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule
   ],
-  providers: [MainService, SessionService],
+  providers: [MainService, SessionService, ReqService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

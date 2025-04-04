@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, computed, Signal } from '@angular/core';
+import { MainService } from '../services/mainService.service';
+import { TestPostClass } from '../interfaces/interfaces';
 
 @Component({
   selector: 'app-logged-in',
@@ -6,6 +8,7 @@ import { Component } from '@angular/core';
   templateUrl: './logged-in.component.html',
   styleUrl: './logged-in.component.scss'
 })
-export class LoggedInComponent {
-
+export class LoggedInComponent{
+  constructor(private ms: MainService){}
+  items: Signal<TestPostClass[]> = computed(()=>{ return this.ms.httpSignal(); })
 }

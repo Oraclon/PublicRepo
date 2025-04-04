@@ -31,8 +31,10 @@
         <div class="card">
             <div class="title">Signal Login [{{logged() ? "Logged In" : "Logged Out"}}]</div>
             <div class="body">
-                <button style="width: 100%;" (click)="login()" *ngIf="!loggedIn()">Login</button>
-                <button style="width: 100%;" (click)="logout()" *ngIf="loggedIn()">Logout</button>
+                <button style="width: 100%;" (click)="login()" *ngIf="!loggedIn(); else aTemplate">Login</button>
+                <ng-template #aTemplate>
+                    <button style="width: 100%;" (click)="logout()">Logout</button>
+                </ng-template>
             </div>
         </div>
     </div>

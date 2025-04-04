@@ -13,7 +13,6 @@ export class SignalHttpViewComponent {
   isLogged: Signal<boolean> = computed(()=>{
     return this.ms.loginSignal();
   })
-
   
   items:Signal<TestPostClass[]> = computed(()=>{ return this.ms.httpSignal(); });
 

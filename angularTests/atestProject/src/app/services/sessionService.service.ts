@@ -1,5 +1,6 @@
 import { computed, Injectable, Signal } from "@angular/core";
 import { MainService } from "./mainService.service";
+import { Router } from "@angular/router";
 export interface SessionInt
 {
     sessionId: string;
@@ -8,7 +9,7 @@ export interface SessionInt
 }
 @Injectable()
 export class SessionService{
-    constructor(private ms: MainService){}
+    constructor(private ms: MainService, private router: Router){}
     private _sessionName: string = "bel";
     private _logged: Signal<boolean> = computed(()=>{ return this.ms.loginSignal(); });
 
@@ -28,6 +29,7 @@ export class SessionService{
     {
         localStorage.removeItem(this._sessionName);
         this.ms.loginSignal.set(false);
+        this.router.navigate(["/signals"]);
     }
     autoLoginLogoutAction():void
     {
