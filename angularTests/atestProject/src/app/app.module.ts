@@ -20,6 +20,8 @@ import { MainMenuComponent } from './plugins/main-menu/main-menu.component';
 import { DemohomeComponent } from './pages/demohome/demohome.component';
 import { SignalsComponent } from './pages/signals/signals.component';
 import { FormComponent } from './pages/form/form.component';
+import { LoggedInComponent } from './logged-in/logged-in.component';
+import { SessionService } from './services/sessionService.service';
 
 @NgModule({
   declarations: [
@@ -38,14 +40,15 @@ import { FormComponent } from './pages/form/form.component';
     MainMenuComponent,
     DemohomeComponent,
     SignalsComponent,
-    FormComponent
+    FormComponent,
+    LoggedInComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule
   ],
-  providers: [MainService],
+  providers: [MainService, SessionService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

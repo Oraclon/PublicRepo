@@ -19,4 +19,14 @@
         font-weight: 700;
         cursor: pointer;
     }
+    & > .menuItem.success
+    {
+        background: var(--success);
+        //color: white;
+    }
+    & > .menuItem.danger
+    {
+        background: var(--danger);
+        color: white;
+    }
 }

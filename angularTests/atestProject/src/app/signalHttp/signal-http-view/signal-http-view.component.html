@@ -1,4 +1,7 @@
-<div style="display: grid; gap: var(--padGap); overflow-y: auto; max-height: 100px">
+<div style="max-height: 100px" *ngIf="!isLogged()">
+    You are not authorized to access this data please <span style="font-weight: 700;">Login</span>
+</div>
+<div style="display: grid; gap: var(--padGap); overflow-y: auto; max-height: 100px" *ngIf="isLogged()">
     <div style="display: grid; gap: var(--padGap); font-size: .8em;">
         <div 
             *ngFor="let item of items()" 

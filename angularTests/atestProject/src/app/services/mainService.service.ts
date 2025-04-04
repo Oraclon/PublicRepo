@@ -12,6 +12,7 @@ export class MainService
     public viewSignal = signal<ViewType>(ViewType.None);
     public httpSignal = signal<TestPostClass[]>([]);
     public intervalSignal = signal<number>(0);
+    public loginSignal = signal<boolean>(false);
 
     interval = setInterval(()=>{
         this.arraySignal.set(this.test);

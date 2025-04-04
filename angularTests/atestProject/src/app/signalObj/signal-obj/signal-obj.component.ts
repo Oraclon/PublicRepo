@@ -10,9 +10,9 @@ import { iTestInterface } from '../../interfaces/interfaces';
 })
 export class SignalObjComponent {
   constructor(private ms:MainService, private rend: Renderer2){
-    effect(()=>{ 
+    /*effect(()=>{ 
       if(ms.arraySignal()){ console.log("Change Made in ArraySignal: " + ms.arraySignal() ) }
-    })
+    })*/
   }
   @ViewChild("testInput") testInput !: ElementRef;
 

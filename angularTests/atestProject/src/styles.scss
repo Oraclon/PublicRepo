@@ -6,6 +6,8 @@
     --tone: #71BBB2;
     --padGap: .6rem;
     --gridRows: repeat(2, auto);
+    --success: #D3E671;
+    --danger : #FF8989;
 
     @media only screen and (max-width: 600px)
     {
@@ -20,6 +22,10 @@ html,body
     margin: 0; padding: 0;
     background: var(--background);
     color: var(--color);
+
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
 
     /* width */
     ::-webkit-scrollbar {
@@ -61,6 +67,12 @@ button
     color: var(--color);
     font-weight: 700;
     cursor: pointer;
+}
+button.disabled,
+button[disabled]
+{
+    cursor: not-allowed;
+    background: rgba(255, 48, 48, 0.358);
 }
 fieldset
 {

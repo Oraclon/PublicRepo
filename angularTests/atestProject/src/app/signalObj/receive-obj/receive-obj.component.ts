@@ -17,7 +17,7 @@ export class ReceiveObjComponent implements OnInit{
   }
 
   constructor(private ms:MainService){
-    effect(()=>{ console.log(this.ms.testSignal()) })
+    //effect(()=>{ console.log(this.ms.testSignal()) })
   }
   value: Signal<iTestInterface> = computed(()=>{
     return this.ms.testSignal();

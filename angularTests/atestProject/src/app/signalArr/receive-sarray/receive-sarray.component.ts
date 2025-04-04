@@ -13,7 +13,6 @@ export class ReceiveSarrayComponent {
   }
 
   items: Signal<string[]> = computed(()=>{
-    console.log(this.ms.arraySignal())
     return this.ms.arraySignal();
   }) 
 

@@ -16,7 +16,6 @@ export class SendSarrayComponent {
   updateInputValue(input: HTMLInputElement)
   {
     let int = setInterval(()=>{
-    console.log(input)
       this.inputValue = input.value;
       clearInterval(int)
     },40)

@@ -10,6 +10,9 @@ import { TestPostClass } from '../../interfaces/interfaces';
 })
 export class SignalHttpViewComponent {
   constructor(private ms: MainService){}
+  isLogged: Signal<boolean> = computed(()=>{
+    return this.ms.loginSignal();
+  })
 
   
   items:Signal<TestPostClass[]> = computed(()=>{ return this.ms.httpSignal(); });

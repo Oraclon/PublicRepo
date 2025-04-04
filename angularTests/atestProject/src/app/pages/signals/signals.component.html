@@ -28,5 +28,12 @@
                 <app-signal-http-view></app-signal-http-view>
             </div>
         </div>
+        <div class="card">
+            <div class="title">Signal Login [{{logged() ? "Logged In" : "Logged Out"}}]</div>
+            <div class="body">
+                <button style="width: 100%;" (click)="login()" *ngIf="!loggedIn()">Login</button>
+                <button style="width: 100%;" (click)="logout()" *ngIf="loggedIn()">Logout</button>
+            </div>
+        </div>
     </div>
 </div> 
