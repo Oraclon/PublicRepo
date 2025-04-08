@@ -13,19 +13,25 @@ namespace ConsoleApp2
         static void Main(string[] args)
         {
             Random rnd = new Random();
-            TestItem[] items = Enumerable.Range(0, 3200000).Select(x => new TestItem() { value = (int)(x + 1), amenity = rnd.Next(12) }).ToArray();
+            TestItem[] items = Enumerable.Range(0, 60).Select(x => new TestItem(rnd) { price = (int)(x + 1) }).ToArray();
             TestItem[] collection = new TestItem[0];
 
             MainTest t = new MainTest();
-            t.prop1 = "600,700";
+            //price
+            t.prop1 = ",100";
+            //floor
             t.prop2 = "1,";
+            //rooms
             t.prop3 = "1,5";
+            //amenity
             t.prop4 = "1,2";
             
             SecondTest filters = t.stest;
+            //Search by price
             if(!filters.prop1.Length.Equals(0))
-                collection = items.Where(x => CheckCondition(filters.prop1.ToRangeItem(), x.value)).ToArray();
-            if(!filters.prop4.Length.Equals(0))
+                collection = items.Where(x => CheckCondition(filters.prop1.ToRangeItem(), x.price)).ToArray();
+            //Search by amenity
+            if (!filters.prop4.Length.Equals(0))
                 collection = (collection.Any() ? collection : items).Where(x => filters.prop4.Contains(x.amenity)).ToArray();
         }
     }
