@@ -14,17 +14,19 @@ namespace ConsoleApp2
         {
             Random rnd = new Random();
             TestItem[] items = Enumerable.Range(0, 3200000).Select(x => new TestItem() { value = (int)(x + 1), amenity = rnd.Next(12) }).ToArray();
+            TestItem[] collection = new TestItem[0];
 
             MainTest t = new MainTest();
             t.prop1 = "600,700";
             t.prop2 = "1,";
             t.prop3 = "1,5";
             t.prop4 = "1,2";
-            IEnumerable<TestItem> collection;
+            
             SecondTest filters = t.stest;
-
-            collection = items.Where(x => !filters.prop1.Equals(null) && CheckCondition(filters.prop1.ToRangeItem(), x.value));
-            collection = collection.Where(x => !filters.prop4.Equals(null) && filters.prop4.Contains(x.amenity));
+            if(!filters.prop1.Length.Equals(0))
+                collection = items.Where(x => CheckCondition(filters.prop1.ToRangeItem(), x.value)).ToArray();
+            if(!filters.prop4.Length.Equals(0))
+                collection = (collection.Any() ? collection : items).Where(x => filters.prop4.Contains(x.amenity)).ToArray();
         }
     }
 }
