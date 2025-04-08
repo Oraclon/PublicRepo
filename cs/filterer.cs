@@ -30,6 +30,9 @@ namespace ConsoleApp2
             //Search by price
             if(!filters.prop1.Length.Equals(0))
                 collection = items.Where(x => CheckCondition(filters.prop1.ToRangeItem(), x.price)).ToArray();
+            //Search by roof
+            if (!filters.prop2.Length.Equals(0))
+                collection = (collection.Any() ? collection : items).Where(x => CheckCondition(filters.prop2.ToRangeItem(), x.floor)).ToArray();
             //Search by amenity
             if (!filters.prop4.Length.Equals(0))
                 collection = (collection.Any() ? collection : items).Where(x => filters.prop4.Contains(x.amenity)).ToArray();
