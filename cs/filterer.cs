@@ -12,33 +12,33 @@ namespace ConsoleApp2
         }
         static void Main(string[] args)
         {
-            Random rnd = new Random();
-            TestItem[] items = Enumerable.Range(0, 60).Select(x => new TestItem(rnd) { price = (int)(x + 1) }).ToArray();
+             Random rnd = new Random();
+            TestItem[] items = Enumerable.Range(0, 100000).Select(x => new TestItem(rnd) { price = (int)(x + 1) }).OrderBy(x=> rnd.Next()).ToArray();
             TestItem[] collection = new TestItem[0];
 
             MainTest t = new MainTest();
             //price
-            t.prop1 = ",100";
+            t.prop1 = "800,";
             //floor
-            t.prop2 = "1,";
+            t.prop2 = "11,";
             //rooms
-            t.prop3 = "1,5";
+            t.prop3 = "2,";
             //amenity
-            t.prop4 = "1,2";
+            t.prop4 = "1,2,4,7";
             
             SecondTest filters = t.stest;
             //Search by price
-            if(!filters.prop1.Length.Equals(0))
-                collection = items.Where(x => CheckCondition(filters.prop1.ToRangeItem(), x.price)).ToArray();
+            if(!filters.price.Length.Equals(0))
+                collection = items.Where(x => CheckCondition(filters.price.ToRangeItem(), x.price)).ToArray();
             //Search by roof
-            if (!filters.prop2.Length.Equals(0))
-                collection = (collection.Any() ? collection : items).Where(x => CheckCondition(filters.prop2.ToRangeItem(), x.floor)).ToArray();
+            if (!filters.floor.Length.Equals(0))
+                collection = (collection.Any() ? collection : items).Where(x => CheckCondition(filters.floor.ToRangeItem(), x.floor)).ToArray();
             //Search by rooms
-            if (!filters.prop3.Length.Equals(0))
-                collection = (collection.Any() ? collection : items).Where(x => CheckCondition(filters.prop3.ToRangeItem(), x.rooms)).ToArray();
+            if (!filters.rooms.Length.Equals(0))
+                collection = (collection.Any() ? collection : items).Where(x => CheckCondition(filters.rooms.ToRangeItem(), x.rooms)).ToArray();
             //Search by amenity (Not part of primary search thats why collection.any() removed)
-            if (!filters.prop4.Length.Equals(0))
-                collection = collection.Where(x => filters.prop4.Contains(x.amenity)).ToArray();
+            if (!filters.amenity.Length.Equals(0))
+                collection = collection.Where(x => filters.amenity.Contains(x.amenity)).ToArray();
         }
     }
 }
