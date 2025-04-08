@@ -7,7 +7,7 @@ namespace ConsoleApp2
     class Program
     {
         
-        static void Main(string[] args)
+         static void Main(string[] args)
         {
             Random rnd = new Random();
             List<PropertyItem> items = Enumerable.Range(0, 1000).Select(x => new PropertyItem(rnd) { price = (int)(x + 1) }).OrderBy(x=> rnd.Next()).ToList();
@@ -15,7 +15,7 @@ namespace ConsoleApp2
 
             MainTest t = new MainTest();
             //price
-            t.prop1 = "800,";
+            t.prop1 = "800,900";
             //floor
             t.prop2 = "4,";
             //rooms
@@ -34,9 +34,7 @@ namespace ConsoleApp2
             if (!filters.rooms.Length.Equals(0))
                 result.resultsList = (result.resultsList.Any() ? result.resultsList : items).ApplyRangeFilter(filters.rooms.ToRangeItem(), ValueType.Room);
             if (!filters.amenity.Length.Equals(0))
-                result.resultsList = result.resultsList.Where(x => filters.amenity.Contains(x.amenity)).ToList();
-            //Filter Amenity: [4,7,8,9]
-            //Property Amenity: [1,2,3,4]
+                result.resultsList = result.resultsList.AppyAmenityFilter(filters.amenity);
         }
     }
 }
