@@ -6,39 +6,34 @@ namespace ConsoleApp2
 {
     class Program
     {
-        static bool CheckCondition(RangeItem range, int value)
-        {
-            return ((range.min > 0 && value >= range.min) && (range.max > 0 && value <= range.max)) || (range.min == 0 && value <= range.max) || (value >= range.min && range.max == 0);
-        }
+        
         static void Main(string[] args)
         {
-             Random rnd = new Random();
-            TestItem[] items = Enumerable.Range(0, 100000).Select(x => new TestItem(rnd) { price = (int)(x + 1) }).OrderBy(x=> rnd.Next()).ToArray();
-            TestItem[] collection = new TestItem[0];
+            Random rnd = new Random();
+            List<PropertyItem> items = Enumerable.Range(0, 1000).Select(x => new PropertyItem(rnd) { price = (int)(x + 1) }).OrderBy(x=> rnd.Next()).ToList();
+            PropertyItem[] collection = new PropertyItem[0];
 
             MainTest t = new MainTest();
             //price
             t.prop1 = "800,";
             //floor
-            t.prop2 = "11,";
+            t.prop2 = "4,";
             //rooms
             t.prop3 = "2,";
             //amenity
-            t.prop4 = "1,2,4,7";
+            t.prop4 = "4,7,8,9";
             
             SecondTest filters = t.stest;
-            //Search by price
-            if(!filters.price.Length.Equals(0))
-                collection = items.Where(x => CheckCondition(filters.price.ToRangeItem(), x.price)).ToArray();
-            //Search by roof
+
+            SearchResult result = new SearchResult();
+            //Filter by price
+            if (!filters.price.Length.Equals(0))
+                result.resultsList = items.ApplyRangeFilter(filters.price.ToRangeItem(), ValueType.Price);
             if (!filters.floor.Length.Equals(0))
-                collection = (collection.Any() ? collection : items).Where(x => CheckCondition(filters.floor.ToRangeItem(), x.floor)).ToArray();
-            //Search by rooms
+                result.resultsList = (result.resultsList.Any() ? result.resultsList : items).ApplyRangeFilter(filters.floor.ToRangeItem(), ValueType.Floor);
             if (!filters.rooms.Length.Equals(0))
-                collection = (collection.Any() ? collection : items).Where(x => CheckCondition(filters.rooms.ToRangeItem(), x.rooms)).ToArray();
-            //Search by amenity (Not part of primary search thats why collection.any() removed)
-            if (!filters.amenity.Length.Equals(0))
-                collection = collection.Where(x => filters.amenity.Contains(x.amenity)).ToArray();
+                result.resultsList = (result.resultsList.Any() ? result.resultsList : items).ApplyRangeFilter(filters.rooms.ToRangeItem(), ValueType.Room);
+
         }
     }
 }
