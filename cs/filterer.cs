@@ -33,6 +33,8 @@ namespace ConsoleApp2
                 result.resultsList = (result.resultsList.Any() ? result.resultsList : items).ApplyRangeFilter(filters.floor.ToRangeItem(), ValueType.Floor);
             if (!filters.rooms.Length.Equals(0))
                 result.resultsList = (result.resultsList.Any() ? result.resultsList : items).ApplyRangeFilter(filters.rooms.ToRangeItem(), ValueType.Room);
+            if (!filters.amenity.Length.Equals(0))
+                result.resultsList = result.resultsList.Where(x => filters.amenity.Contains(x.amenity)).ToList();
 
         }
     }
