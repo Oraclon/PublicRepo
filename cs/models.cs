@@ -18,11 +18,11 @@ namespace ConsoleApp2
     }
     public class SecondTest
     {
-        public int[] prop1 { get; set; }
-        public int[] prop2 { get; set; }
-        public int[] prop3 { get; set; }
-        public int[] prop4 { get; set; }
-}
+        public int[] prop1 { get; set; } = new int[0];
+        public int[] prop2 { get; set; } = new int[0];
+        public int[] prop3 { get; set; } = new int[0];
+        public int[] prop4 { get; set; } = new int[0];
+    }
 public class MainTest
 {
     public SecondTest stest = new SecondTest();
