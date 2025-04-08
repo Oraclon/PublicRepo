@@ -35,10 +35,10 @@ namespace ConsoleApp2
                 collection = (collection.Any() ? collection : items).Where(x => CheckCondition(filters.prop2.ToRangeItem(), x.floor)).ToArray();
             //Search by rooms
             if (!filters.prop3.Length.Equals(0))
-                collection = (collection.Any() ? collection : items).Where(x => CheckCondition(filters.prop3.ToRangeItem(), x.floor)).ToArray();
-            //Search by amenity
+                collection = (collection.Any() ? collection : items).Where(x => CheckCondition(filters.prop3.ToRangeItem(), x.rooms)).ToArray();
+            //Search by amenity (Not part of primary search thats why collection.any() removed)
             if (!filters.prop4.Length.Equals(0))
-                collection = (collection.Any() ? collection : items).Where(x => filters.prop4.Contains(x.amenity)).ToArray();
+                collection = collection.Where(x => filters.prop4.Contains(x.amenity)).ToArray();
         }
     }
 }
