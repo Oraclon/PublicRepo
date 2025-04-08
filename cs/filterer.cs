@@ -35,7 +35,8 @@ namespace ConsoleApp2
                 result.resultsList = (result.resultsList.Any() ? result.resultsList : items).ApplyRangeFilter(filters.rooms.ToRangeItem(), ValueType.Room);
             if (!filters.amenity.Length.Equals(0))
                 result.resultsList = result.resultsList.Where(x => filters.amenity.Contains(x.amenity)).ToList();
-
+            //Filter Amenity: [4,7,8,9]
+            //Property Amenity: [1,2,3,4]
         }
     }
 }
