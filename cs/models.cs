@@ -15,9 +15,9 @@ namespace ConsoleApp2
             floor = rand.Next(1,12);
         }
         public int price { get; set; }
-        public int amenity { get; set; }
-        public int rooms { get; set; }
         public int floor { get; set; }
+        public int rooms { get; set; }
+        public int amenity { get; set; }
     }
     public class RangeItem
     {
@@ -26,10 +26,10 @@ namespace ConsoleApp2
     }
     public class SecondTest
     {
-        public int[] prop1 { get; set; } = new int[0];
-        public int[] prop2 { get; set; } = new int[0];
-        public int[] prop3 { get; set; } = new int[0];
-        public int[] prop4 { get; set; } = new int[0];
+        public int[] price { get; set; } = new int[0];
+        public int[] rooms { get; set; } = new int[0];
+        public int[] floor { get; set; } = new int[0];
+        public int[] amenity { get; set; } = new int[0];
     }
 public class MainTest
 {
@@ -39,11 +39,11 @@ public class MainTest
         set
         {
             if (!string.IsNullOrEmpty(value))
-                stest.prop1 = value.SplitStringFilter();
+                stest.price = value.SplitStringFilter();
         }
         get
         {
-            return stest.prop1 == null ? string.Empty : string.Join(",", stest.prop1);
+            return stest.price == null ? string.Empty : string.Join(",", stest.price);
         }
     }
     public string prop2
@@ -51,11 +51,11 @@ public class MainTest
         set
         {
             if (!string.IsNullOrEmpty(value))
-                stest.prop2 = value.SplitStringFilter();
+                stest.rooms = value.SplitStringFilter();
         }
         get
         {
-            return stest.prop2 == null ? string.Empty : string.Join(",", stest.prop2);
+            return stest.rooms == null ? string.Empty : string.Join(",", stest.rooms);
         }
     }
     public string prop3
@@ -63,11 +63,11 @@ public class MainTest
         set
         {
             if (!string.IsNullOrEmpty(value))
-                stest.prop3 = value.SplitStringFilter();
+                stest.floor = value.SplitStringFilter();
         }
         get
         {
-            return stest.prop3 == null ? string.Empty : string.Join(",", stest.prop3);
+            return stest.floor == null ? string.Empty : string.Join(",", stest.floor);
         }
     }
     public string prop4
@@ -75,27 +75,27 @@ public class MainTest
         set
         {
             if (!string.IsNullOrEmpty(value))
-                stest.prop4 = value.SplitStringFilter();
+                stest.amenity = value.SplitStringFilter();
         }
         get
         {
-            return stest.prop4 == null ? string.Empty : string.Join(",", stest.prop4);
+            return stest.amenity == null ? string.Empty : string.Join(",", stest.amenity);
         }
     }
 }
-public static class Helpers
-{
-    public static int[] SplitStringFilter(this string input)
+    public static class Helpers
     {
-        string[] splittedElements = input.Split(",");
-        return splittedElements.Select(x => string.IsNullOrEmpty(x) ? (int)0 : Convert.ToInt16(x)).ToArray();
+        public static int[] SplitStringFilter(this string input)
+        {
+            string[] splittedElements = input.Split(",");
+            return splittedElements.Select(x => string.IsNullOrEmpty(x) ? (int)0 : Convert.ToInt16(x)).ToArray();
+        }
+        public static RangeItem ToRangeItem(this int[] value)
+        {
+            RangeItem item = new RangeItem();
+            item.min = value[0];
+            item.max = value[1];
+            return item;
+        }
     }
-    public static RangeItem ToRangeItem(this int[] value)
-    {
-        RangeItem item = new RangeItem();
-        item.min = value[0];
-        item.max = value[1];
-        return item;
-    }
-}
 }
