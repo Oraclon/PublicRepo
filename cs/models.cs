@@ -8,8 +8,16 @@ namespace ConsoleApp2
 {
     public class TestItem
     {
-        public int value { get; set; }
+        public TestItem(Random rand)
+        {
+            amenity = rand.Next(1,10);
+            rooms = rand.Next(1,4);
+            floor = rand.Next(1,12);
+        }
+        public int price { get; set; }
         public int amenity { get; set; }
+        public int rooms { get; set; }
+        public int floor { get; set; }
     }
     public class RangeItem
     {
