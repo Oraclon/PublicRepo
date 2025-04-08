@@ -56,7 +56,7 @@ namespace ConsoleApp2
                             if (CheckCondition(filter, item.rooms)) collection.Add(item);
                         break;
                     case ValueType.Floor:
-                            if (CheckCondition(filter, item.rooms)) collection.Add(item);
+                            if (CheckCondition(filter, item.floor)) collection.Add(item);
                         break;
                 }
             }
