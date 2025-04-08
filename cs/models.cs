@@ -20,19 +20,6 @@ namespace ConsoleApp2
         public int[] amenity { get; set; } = new int[0];
     }
 
-    public class PropertyItem
-    {
-        public PropertyItem(Random rand)
-        {
-            amenity = rand.Next(1, 10);
-            rooms = rand.Next(1, 6);
-            floor = rand.Next(1, 12);
-        }
-        public int price { get; set; }
-        public int floor { get; set; }
-        public int rooms { get; set; }
-        public int amenity { get; set; }
-    }
     public class MainTest
     {
         public SecondTest stest = new SecondTest();
@@ -85,7 +72,24 @@ namespace ConsoleApp2
             }
         }
     }
+    
+    public class PropertyItem
+    {
+        public PropertyItem(Random rand)
+        {
+            amenity = rand.Next(1, 10);
+            rooms = rand.Next(1, 6);
+            floor = rand.Next(1, 12);
 
+            int amenitiesSize = rand.Next(1, 10);
+            amenities = Enumerable.Range(0, amenitiesSize).Select(x => rand.Next(1, 20)).ToArray();
+        }
+        public int price { get; set; }
+        public int floor { get; set; }
+        public int rooms { get; set; }
+        public int amenity { get; set; }
+        public int[] amenities { get; set; }
+    }
     public class SearchResult
     {
         public int resultsCount { get; set; }
