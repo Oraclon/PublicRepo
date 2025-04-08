@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace ConsoleApp2
 {
@@ -16,6 +15,19 @@ namespace ConsoleApp2
         public static bool CheckCondition(RangeItem range, int value)
         {
             return ((range.min > 0 && value >= range.min) && (range.max > 0 && value <= range.max)) || (range.min == 0 && value <= range.max) || (value >= range.min && range.max == 0);
+        }
+        public static bool CheckForAmenityInList(this int[] propertyAmenities, int[] filterAmenities)
+        {
+            bool response = false;
+            for (int i = 0; i < propertyAmenities.Length; i++)
+            {
+                if (filterAmenities.Contains(propertyAmenities[i]))
+                {
+                    response = true;
+                    break;
+                }
+            }
+            return response;
         }
         public static int[] SplitStringFilter(this string input)
         {
@@ -48,6 +60,14 @@ namespace ConsoleApp2
                         break;
                 }
             }
+            return collection;
+        }
+        public static List<PropertyItem> AppyAmenityFilter(this List<PropertyItem> items, int[] filterAmeniies)
+        {
+            List<PropertyItem> collection = new List<PropertyItem>();
+            for (int x = 0; x < items.Count; x++)
+                if (items[x].amenities.CheckForAmenityInList(filterAmeniies))
+                    collection.Add(items[x]);
             return collection;
         }
     }
