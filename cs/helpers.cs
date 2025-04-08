@@ -62,7 +62,7 @@ namespace ConsoleApp2
             }
             return collection;
         }
-        public static List<PropertyItem> AppyAmenityFilter(this List<PropertyItem> items, int[] filterAmeniies)
+        public static List<PropertyItem> ApplyAmenityFilter(this List<PropertyItem> items, int[] filterAmeniies)
         {
             List<PropertyItem> collection = new List<PropertyItem>();
             for (int x = 0; x < items.Count; x++)
