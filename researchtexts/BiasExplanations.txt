@@ -1,0 +1,43 @@
+Great question! In a convolutional layer, each filter typically has one bias. This bias is shared across all the positions where the filter is applied in the image.
+
+How it works:
+When you convolve a filter (e.g., a 3x3x3 filter) over an image, at each spatial location (i.e., when the filter slides over the image), the filter performs a dot product operation (convolution) between the filter and the image patch.
+
+After computing this dot product, a bias term is added to the result. This bias is the same for every location where that particular filter is applied.
+
+Why One Bias per Filter:
+Filter's Role: A filter is responsible for detecting certain patterns or features in the image, and that feature detection doesn't change based on its position. The filter is a set of weights that apply to the image, and the bias is added to adjust the output of the convolution before passing through the activation function.
+
+Sharing the Bias: By having one bias per filter, the model ensures that all spatial locations where the filter is applied are affected by the same bias. This allows the network to focus on the features (patterns) rather than adjusting the bias at every spatial location, which would lead to excessive parameters.
+
+Example:
+Suppose you have a 3x3x3 filter for each channel (Red, Green, Blue), which is convolved with an image of size 
+𝐻
+×
+𝑊
+×
+3
+H×W×3.
+
+The result of the convolution will be a 2D feature map of size 
+(
+𝐻
+−
+2
+)
+×
+(
+𝑊
+−
+2
+)
+(H−2)×(W−2) (assuming stride = 1 and no padding).
+
+After this convolution, one bias term is added to each value of this feature map (for that specific filter).
+
+If you have multiple filters in the convolutional layer, each filter will have its own bias term, but each individual filter’s bias will be shared across the entire feature map it produces.
+
+In summary:
+One bias per filter.
+
+The bias is shared across all spatial positions where the filter is applied.
