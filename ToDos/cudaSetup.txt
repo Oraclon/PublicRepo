@@ -1,0 +1,23 @@
+sudo pacman -S nvidia-dkms nvidia-utils nvidia-settings lib32-nvidia-utils opencl-nvidia
+
+//After installation, update the initramfs:
+sudo mkinitcpio -P
+
+//Reboot system
+sudo reboot
+
+//Install CUDA Toolkit
+sudo pacman -S cuda
+sudo pacman -S cuda-tools
+
+//Verify Installation
+nvidia-smi
+nvcc --version
+
+//Setup environment variables
+//To use CUDA tools conveniently, add them to your PATH. Add the following lines to your ~/.bashrc or ~/.zshrc
+export PATH=/opt/cuda/bin:$PATH
+export LD_LIBRARY_PATH=/opt/cuda/lib64:$LD_LIBRARY_PATH
+
+//Then, source the file to apply the changes:
+source ~/.bashrc  # or source ~/.zshrc
