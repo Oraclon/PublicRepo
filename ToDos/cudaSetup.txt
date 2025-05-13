@@ -27,3 +27,38 @@ sudo pacman -Syu
 sudo pacman-mirrors --fasttrack
 sudo pacman -Syy
 sudo pacman -S cuda
+-----------------------------------------
+1. Check if nvcc exists
+
+Try running:
+
+ls /opt/cuda/bin/nvcc
+
+If that returns a valid path (like /opt/cuda/bin/nvcc), the install is good — it's just your PATH that's missing the CUDA location.
+2. Temporarily Add to PATH
+
+Try this in your terminal:
+
+export PATH=/opt/cuda/bin:$PATH
+
+Then test:
+
+nvcc --version
+
+If that works — great! Now let's make it permanent.
+3. Permanently Add CUDA to PATH
+
+Edit your shell config file (based on your shell):
+
+    For Bash: ~/.bashrc
+
+    For Zsh: ~/.zshrc
+
+Add this line to the end:
+
+export PATH=/opt/cuda/bin:$PATH
+
+Then reload the config:
+
+source ~/.bashrc    # or source ~/.zshrc
+----------------------------------------------
