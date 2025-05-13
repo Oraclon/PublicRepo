@@ -21,3 +21,9 @@ export LD_LIBRARY_PATH=/opt/cuda/lib64:$LD_LIBRARY_PATH
 
 //Then, source the file to apply the changes:
 source ~/.bashrc  # or source ~/.zshrc
+
+
+sudo pacman -Syu
+sudo pacman-mirrors --fasttrack
+sudo pacman -Syy
+sudo pacman -S cuda
