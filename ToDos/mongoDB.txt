@@ -1,0 +1,13 @@
+//Step 1: Install MongoDB on Arch Linux
+//Open a terminal and update your system packages:
+sudo pacman -Syu
+
+//Install MongoDB from the Arch repositories
+sudo pacman -S mongodb
+
+//Start and enable the MongoDB service:
+sudo systemctl start mongodb
+sudo systemctl enable mongodb
+
+//Verify that MongoDB is running:
+sudo systemctl status mongodb
